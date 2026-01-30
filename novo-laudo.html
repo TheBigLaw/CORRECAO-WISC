@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Novo Laudo | WISC-IV</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+<h1>Novo Laudo – WISC-IV</h1>
+
+<h2>Identificação</h2>
+<div class="grid">
+  <input type="text" id="nome" placeholder="Nome do paciente">
+  <input type="date" id="dataNascimento">
+  <input type="date" id="dataAplicacao">
+</div>
+<p id="idadeCalculada"></p>
+
+<!-- SUBTESTES (IGUAL AO QUE JÁ EXISTIA) -->
+<h2>Compreensão Verbal (CV)</h2>
+<div class="grid">
+  <input type="number" id="Semelhancas" placeholder="Semelhanças">
+  <input type="number" id="Vocabulario" placeholder="Vocabulário">
+  <input type="number" id="Compreensao" placeholder="Compreensão">
+</div>
+
+<h2>Raciocínio Perceptual (RP)</h2>
+<div class="grid">
+  <input type="number" id="Cubos" placeholder="Cubos">
+  <input type="number" id="Conceitos" placeholder="Conceitos Figurativos">
+  <input type="number" id="Matricial" placeholder="Raciocínio Matricial">
+</div>
+
+<h2>Memória de Trabalho (MT)</h2>
+<div class="grid">
+  <input type="number" id="Digitos" placeholder="Dígitos">
+  <input type="number" id="Sequencia" placeholder="Seq. Números e Letras">
+</div>
+
+<h2>Velocidade de Processamento (VP)</h2>
+<div class="grid">
+  <input type="number" id="Codigo" placeholder="Código">
+  <input type="number" id="Simbolos" placeholder="Procurar Símbolos">
+</div>
+
+<div class="buttons">
+  <button onclick="calcular(true)">Salvar e Calcular</button>
+  <button class="print" onclick="window.print()">Imprimir</button>
+</div>
+
+<section id="resultado"></section>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
