@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>WISC-IV – Correção Automatizada</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div class="container">
+
+<header>
+  <h1>WISC-IV – Correção Automatizada</h1>
+</header>
+
+<section class="idade">
+  <h2>Identificação</h2>
+  <div class="grid">
+    <input type="date" id="dataNascimento">
+  </div>
+  <p id="idadeCalculada" style="margin-top:10px;color:#555;"></p>
+</section>
+
+<section>
+  <h2>Compreensão Verbal (CV)</h2>
+  <div class="grid">
+    <input type="number" id="Semelhancas" placeholder="Semelhanças">
+    <input type="number" id="Vocabulario" placeholder="Vocabulário">
+    <input type="number" id="Compreensao" placeholder="Compreensão">
+  </div>
+</section>
+
+<section>
+  <h2>Raciocínio Perceptual (RP)</h2>
+  <div class="grid">
+    <input type="number" id="Cubos" placeholder="Cubos">
+    <input type="number" id="Conceitos" placeholder="Conceitos Figurativos">
+    <input type="number" id="Matricial" placeholder="Raciocínio Matricial">
+  </div>
+</section>
+
+<section>
+  <h2>Memória de Trabalho (MT)</h2>
+  <div class="grid">
+    <input type="number" id="Digitos" placeholder="Dígitos">
+    <input type="number" id="Sequencia" placeholder="Seq. Números e Letras">
+  </div>
+</section>
+
+<section>
+  <h2>Velocidade de Processamento (VP)</h2>
+  <div class="grid">
+    <input type="number" id="Codigo" placeholder="Código">
+    <input type="number" id="Simbolos" placeholder="Procurar Símbolos">
+  </div>
+</section>
+
+<div class="buttons">
+  <button onclick="calcular()">Calcular</button>
+  <button class="print" onclick="window.print()">Imprimir Relatório</button>
+</div>
+
+<section id="resultado"></section>
+
+<footer>
+  Ferramenta de apoio à correção psicológica — uso exclusivo por profissional habilitado.
+</footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
