@@ -77,3 +77,50 @@ th, td {
 @media print {
   .buttons { display: none; }
 }
+
+.relatorio {
+  margin-top: 40px;
+  font-size: 14px;
+}
+
+.relatorio h2 {
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.relatorio table {
+  margin-top: 15px;
+}
+
+.relatorio hr {
+  margin: 25px 0;
+}
+
+.assinatura {
+  text-align: center;
+  margin-top: 60px;
+}
+
+.login-box input {
+  width: 100%;
+  margin: 10px 0;
+}
+
+.erro {
+  color: red;
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  input, button, .dashboard {
+    display: none !important;
+  }
+
+  .container {
+    box-shadow: none;
+    padding: 0;
+  }
+}
