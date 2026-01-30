@@ -10,21 +10,29 @@ body {
   background: #fff;
   padding: 30px;
   border-radius: 6px;
-  box-shadow: 0 0 12px rgba(0,0,0,.08);
+  box-shadow: 0 0 10px rgba(0,0,0,.08);
 }
 
-header, footer {
-  text-align: center;
-  margin-bottom: 25px;
+.center { text-align: center; }
+
+.dashboard {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 40px;
 }
 
-h1 { color: #2c3e50; }
-
-h2 {
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 5px;
-  color: #34495e;
+.card {
+  width: 200px;
+  padding: 30px;
+  background: #2c3e50;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 18px;
 }
+
+h1, h2 { color: #2c3e50; }
 
 .grid {
   display: grid;
@@ -51,7 +59,6 @@ button {
   color: #fff;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
 }
 
 button.print { background: #7f8c8d; }
@@ -59,7 +66,6 @@ button.print { background: #7f8c8d; }
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
 }
 
 th, td {
@@ -68,9 +74,6 @@ th, td {
   text-align: center;
 }
 
-th { background: #f4f6f7; }
-
 @media print {
   .buttons { display: none; }
-  body { background: #fff; }
 }
