@@ -3,71 +3,30 @@
 body {
   font-family: 'Inter', sans-serif;
   background: #f4f8fc;
-  margin: 0;
   color: #1e2a38;
 }
 
 header {
-  background: #1e88e5;
-  color: white;
-  padding: 14px;
+  background: #1565c0;
+  color: #fff;
+  padding: 12px;
   text-align: center;
 }
 
-.center {
-  display: flex;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-}
-
 .card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 10px 20px rgba(0,0,0,.08);
-  margin-bottom: 20px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 8px 18px rgba(0,0,0,.08);
 }
 
 input {
-  width: 100%;
-  padding: 8px;
-  margin: 6px 0 14px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #cfd8dc;
+  padding: 8px;
 }
 
 button {
   background: #1e88e5;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  padding: 20px;
-}
-
-.link {
-  text-align: center;
-  font-size: 18px;
-  text-decoration: none;
-  color: #1e88e5;
-}
-
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-}
-
-.grid-form {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  border-radius: 10px;
 }
