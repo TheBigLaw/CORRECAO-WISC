@@ -3,39 +3,50 @@ function login() {
   if (user.value === "admin" && pass.value === "1234") {
     localStorage.setItem("auth", "ok");
     location.href = "index.html";
-  } else alert("Usuário ou senha inválidos");
+  } else {
+    alert("Usuário ou senha inválidos");
+  }
 }
 
 if (!location.pathname.includes("login") && !localStorage.getItem("auth")) {
   location.href = "login.html";
 }
 
-/* =============== CONFIG ================= */
+/* ================= CONFIG ================= */
 const SUBTESTES = ["CB","SM","DG","CN","CD","VC","SNL","RM","CO","PS","CF","CA","IN","AR","RP"];
 let NORMAS = null;
 
-/* ============== LOAD NORMAS ============== */
+/* ================= LOAD NORMAS ================= */
 async function carregarNormas() {
-  if (!NORMAS) {
+  if (NORMAS) return NORMAS;
+
+  try {
     const r = await fetch("data/normas-wisciv.json");
+    if (!r.ok) throw new Error("JSON não encontrado");
     NORMAS = await r.json();
+    return NORMAS;
+  } catch (e) {
+    alert("Erro ao carregar normas. Verifique o arquivo normas-wisciv.json");
+    console.error(e);
+    throw e;
   }
-  return NORMAS;
 }
 
-/* ============== FORM ===================== */
+/* ================= FORM ================= */
 if (document.getElementById("subtestes")) {
   SUBTESTES.forEach(s => {
     subtestes.innerHTML += `
       <div>
         <label>${s}</label>
-        <input type="number" id="${s}" min="0">
+        <input type="number" id="${s}" min="0" required>
       </div>`;
   });
 }
 
-/* ============== IDADE ==================== */
+/* ================= IDADE ================= */
 function calcularIdade(nasc, apl) {
+  if (!nasc || !apl) return null;
+
   const n = new Date(nasc);
   const a = new Date(apl);
   let anos = a.getFullYear() - n.getFullYear();
@@ -44,20 +55,24 @@ function calcularIdade(nasc, apl) {
   return { anos, meses };
 }
 
-function faixaEtaria({ anos, meses }) {
-  const m = anos * 12 + meses;
-  for (const f in NORMAS) {
-    const [i,fim] = f.split("-");
-    const [ai,mi] = i.split(":").map(Number);
-    const [af,mf] = fim.split(":").map(Number);
-    const miTot = ai*12+mi;
-    const mfTot = af*12+mf;
-    if (m >= miTot && m <= mfTot) return f;
+function faixaEtaria(idade) {
+  if (!idade) return null;
+  const totalMeses = idade.anos * 12 + idade.meses;
+
+  for (const faixa in NORMAS) {
+    const [ini, fim] = faixa.split("-");
+    const [ai, mi] = ini.split(":").map(Number);
+    const [af, mf] = fim.split(":").map(Number);
+
+    const min = ai * 12 + mi;
+    const max = af * 12 + mf;
+
+    if (totalMeses >= min && totalMeses <= max) return faixa;
   }
   return null;
 }
 
-/* ============== CLASSIFICAÇÃO ============ */
+/* ================= CLASSIFICAÇÃO ================= */
 function classificar(p) {
   if (p <= 4) return "Muito Inferior";
   if (p <= 6) return "Inferior";
@@ -68,45 +83,80 @@ function classificar(p) {
   return "Muito Superior";
 }
 
-/* ============== CÁLCULO ================== */
+/* ================= CÁLCULO ================= */
 async function calcularLaudo() {
-  await carregarNormas();
+  try {
+    await carregarNormas();
 
-  const idade = calcularIdade(nascimento.value, aplicacao.value);
-  const faixa = faixaEtaria(idade);
-  if (!faixa) return alert("Faixa etária não encontrada");
+    if (!nome.value || !nascimento.value || !aplicacao.value) {
+      return alert("Preencha todos os dados do paciente.");
+    }
 
-  const resultados = {};
-  const valoresGrafico = {};
+    const idade = calcularIdade(nascimento.value, aplicacao.value);
+    const faixa = faixaEtaria(idade);
 
-  SUBTESTES.forEach(s => {
-    const bruto = Number(document.getElementById(s).value);
-    const regras = NORMAS[faixa].subtestes[s];
-    const regra = regras.find(r => bruto >= r.min && bruto <= r.max);
-    const pond = regra ? regra.ponderado : null;
+    if (!faixa) {
+      return alert("Idade fora das faixas normativas do WISC-IV.");
+    }
 
-    resultados[s] = {
-      bruto,
-      ponderado: pond,
-      classificacao: pond ? classificar(pond) : "—"
-    };
+    const resultados = {};
+    const grafico = {};
 
-    valoresGrafico[s] = pond;
-  });
+    for (const s of SUBTESTES) {
+      const campo = document.getElementById(s);
+      if (!campo.value) {
+        return alert(`Preencha o subteste ${s}.`);
+      }
 
-  gerarRelatorio(resultados, valoresGrafico, faixa);
+      const bruto = Number(campo.value);
+      const regras = NORMAS[faixa]?.subtestes[s];
+      if (!regras) {
+        return alert(`Norma não encontrada para ${s}.`);
+      }
+
+      const regra = regras.find(r => bruto >= r.min && bruto <= r.max);
+      if (!regra) {
+        return alert(`Ponto bruto inválido em ${s}.`);
+      }
+
+      resultados[s] = {
+        bruto,
+        ponderado: regra.ponderado,
+        classificacao: classificar(regra.ponderado)
+      };
+
+      grafico[s] = regra.ponderado;
+    }
+
+    gerarRelatorio(resultados, grafico, faixa);
+
+  } catch (e) {
+    console.error(e);
+  }
 }
 
-/* ============== GRÁFICOS ================= */
-function graficoSubtestes(canvasId, valores) {
-  new Chart(document.getElementById(canvasId), {
+/* ================= PDF + GRÁFICO ================= */
+function gerarRelatorio(resultados, grafico, faixa) {
+  const area = document.createElement("div");
+  area.style.padding = "20px";
+  area.innerHTML = `
+    <h2>Laudo WISC-IV</h2>
+    <p><b>Paciente:</b> ${nome.value}</p>
+    <p><b>Faixa Etária:</b> ${faixa}</p>
+    <canvas id="graficoSub" height="200"></canvas>
+    <pre>${JSON.stringify(resultados, null, 2)}</pre>
+  `;
+
+  document.body.appendChild(area);
+
+  new Chart(document.getElementById("graficoSub"), {
     type: "line",
     data: {
-      labels: Object.keys(valores),
+      labels: Object.keys(grafico),
       datasets: [{
-        data: Object.values(valores),
+        data: Object.values(grafico),
         borderWidth: 2,
-        tension: 0.35
+        tension: 0.3
       }]
     },
     options: {
@@ -114,23 +164,6 @@ function graficoSubtestes(canvasId, valores) {
       scales: { y: { min: 1, max: 19 } }
     }
   });
-}
-
-/* ============== PDF ====================== */
-function gerarRelatorio(resultados, grafico, faixa) {
-  const area = document.createElement("div");
-  area.id = "relatorio";
-  area.innerHTML = `
-    <h2>Laudo WISC-IV</h2>
-    <p><b>Paciente:</b> ${nome.value}</p>
-    <p><b>Faixa etária:</b> ${faixa}</p>
-    <canvas id="graficoSub" height="200"></canvas>
-    <h3>Resultados</h3>
-    <pre>${JSON.stringify(resultados, null, 2)}</pre>
-  `;
-
-  document.body.appendChild(area);
-  graficoSubtestes("graficoSub", grafico);
 
   setTimeout(() => {
     html2pdf().set({
@@ -139,5 +172,5 @@ function gerarRelatorio(resultados, grafico, faixa) {
       html2canvas: { scale: 2 },
       jsPDF: { format: "a4" }
     }).from(area).save().then(() => area.remove());
-  }, 500);
+  }, 600);
 }
