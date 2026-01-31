@@ -6,22 +6,13 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header>Dashboard WISC-IV</header>
 
-<script>
-  if (!sessionStorage.getItem("logado")) {
-    window.location.href = "login.html";
-  }
-</script>
+  <main class="grid">
+    <a class="card link" href="novo-laudo.html">➕ Novo Laudo</a>
+    <a class="card link" href="laudos.html">📄 Laudos Salvos</a>
+  </main>
 
-<div class="container center">
-  <h1>WISC-IV</h1>
-  <p>Sistema de Correção e Laudos</p>
-
-  <div class="dashboard">
-    <a href="laudos.html" class="card-link">📂<br>Laudos lançados</a>
-    <a href="novo-laudo.html" class="card-link">➕<br>Novo laudo</a>
-  </div>
-</div>
-
+  <script src="script.js"></script>
 </body>
 </html>
