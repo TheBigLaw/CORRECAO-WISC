@@ -87,3 +87,33 @@ function carregarLaudos() {
     r.innerHTML=`<td>${l.nome}</td><td>${l.teste}</td><td>${l.faixa}</td>`;
   });
 }
+
+function desenharGraficoIndices(indices) {
+  const canvas = document.getElementById("graficoIndices");
+  const ctx = canvas.getContext("2d");
+
+  const labels = ["ICV", "IOP", "IMO", "IVP", "QI"];
+  const valores = [
+    indices.icv,
+    indices.iop,
+    indices.imo,
+    indices.ivp,
+    indices.qi
+  ];
+
+  const pad = 40;
+  const max = 160;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.beginPath();
+  valores.forEach((v, i) => {
+    const x = pad + i * (canvas.width - 2 * pad) / (valores.length - 1);
+    const y = canvas.height - pad - (v / max) * (canvas.height - 2 * pad);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+
+  ctx.strokeStyle = "#1f4fa3";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
