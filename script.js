@@ -167,3 +167,32 @@ async function gerarPDF() {
 
   pdf.save(`WISC-IV_${r_nome.innerText}.pdf`);
 }
+
+function classificarQI(pontuacao) {
+  if (pontuacao >= 130) return "Muito Superior";
+  if (pontuacao >= 120) return "Superior";
+  if (pontuacao >= 110) return "Média Superior";
+  if (pontuacao >= 90)  return "Média";
+  if (pontuacao >= 80)  return "Média Inferior";
+  if (pontuacao >= 70)  return "Limítrofe";
+  return "Muito Inferior";
+}
+
+function calcularIndices() {
+  // futuramente: soma de pontos ponderados + tabela normativa
+  const indices = {
+    icv: 100,
+    iop: 102,
+    imo: 98,
+    ivp: 95,
+    qi: 99
+  };
+
+  indices.classificacaoICV = classificarQI(indices.icv);
+  indices.classificacaoIOP = classificarQI(indices.iop);
+  indices.classificacaoIMO = classificarQI(indices.imo);
+  indices.classificacaoIVP = classificarQI(indices.ivp);
+  indices.classificacaoQI  = classificarQI(indices.qi);
+
+  return indices;
+}
