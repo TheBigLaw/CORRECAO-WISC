@@ -28,6 +28,9 @@ function calcular(salvar) {
   const nome = document.getElementById("nome").value;
   const nasc = dataNascimento.value;
   const teste = dataAplicacao.value;
+  const indices = calcularIndicesFake();
+desenharGraficoIndices(indices);
+
 
   if (!nome || !nasc || !teste) {
     alert("Preencha todos os dados de identificação.");
@@ -50,6 +53,7 @@ function calcular(salvar) {
     localStorage.setItem("laudos", JSON.stringify(lista));
     alert("Laudo salvo com sucesso.");
   }
+  
 }
 
 /* GRÁFICO DE LINHA */
@@ -116,4 +120,50 @@ function desenharGraficoIndices(indices) {
   ctx.strokeStyle = "#1f4fa3";
   ctx.lineWidth = 2;
   ctx.stroke();
+}
+
+function calcularIndicesFake() {
+  return {
+    icv: 100,
+    iop: 102,
+    imo: 98,
+    ivp: 95,
+    qi: 99
+  };
+}
+
+async function gerarPDF() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  pdf.setFont("Helvetica");
+  pdf.setFontSize(14);
+  pdf.text("Relatório Psicológico – WISC-IV", 105, 15, { align: "center" });
+
+  pdf.setFontSize(10);
+  pdf.text(`Nome: ${r_nome.innerText}`, 20, 30);
+  pdf.text(`Nascimento: ${r_nasc.innerText}`, 20, 36);
+  pdf.text(`Aplicação: ${r_teste.innerText}`, 20, 42);
+  pdf.text(`Faixa etária: ${r_faixa.innerText}`, 20, 48);
+
+  // Gráfico Subtestes
+  const g1 = document.getElementById("graficoSubtestes").toDataURL("image/png");
+  pdf.addImage(g1, "PNG", 15, 60, 180, 60);
+
+  // Gráfico Índices
+  const g2 = document.getElementById("graficoIndices").toDataURL("image/png");
+  pdf.addPage();
+  pdf.text("Perfil dos Índices Cognitivos", 105, 15, { align: "center" });
+  pdf.addImage(g2, "PNG", 15, 25, 180, 60);
+
+  pdf.setFontSize(9);
+  pdf.text(
+    "Os resultados devem ser interpretados exclusivamente por psicólogo habilitado.",
+    20, 100
+  );
+
+  pdf.text("_______________________________________", 50, 130);
+  pdf.text("Psicólogo Responsável – CRP", 65, 136);
+
+  pdf.save(`WISC-IV_${r_nome.innerText}.pdf`);
 }
