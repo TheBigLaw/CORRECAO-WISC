@@ -32,24 +32,27 @@ header {
   z-index: 100;
 }
 
-/* BOTÃO VOLTAR — SOMENTE ESQUERDA */
+/* BOTÃO VOLTAR — NÃO OCUPA O HEADER */
 header .voltar {
   position: absolute;
   left: 24px;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255,255,255,0.15);
+  width: auto;                 /* <<< ESSENCIAL */
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.18);
   border: none;
   color: #ffffff;
   font-size: 14px;
-  padding: 10px 14px;
   border-radius: 10px;
   cursor: pointer;
+  white-space: nowrap;         /* evita esticar */
 }
 
 header .voltar:hover {
-  background: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.28);
 }
+
 
 /* LOGO CENTRAL REAL */
 header .logo {
