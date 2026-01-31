@@ -7,28 +7,26 @@
 </head>
 <body>
 
-<div class="container">
-  <h1>Laudos Lançados</h1>
-  <table id="tabelaLaudos">
-    <tr>
-      <th>Paciente</th>
-      <th>Data do Teste</th>
-      <th>Faixa Etária</th>
-      <th>Ações</th>
-    </tr>
-  </table>
-</div>
-
-<script src="script.js"></script>
 <script>
-  carregarLaudos();
-</script>
-
-</body>
-  <script>
   if (!sessionStorage.getItem("logado")) {
     window.location.href = "login.html";
   }
 </script>
 
+<div class="container">
+  <h1>Laudos Lançados</h1>
+
+  <table id="tabelaLaudos">
+    <tr>
+      <th>Nome</th>
+      <th>Data de Aplicação</th>
+      <th>Faixa Etária</th>
+    </tr>
+  </table>
+</div>
+
+<script src="script.js"></script>
+<script>carregarLaudos();</script>
+
+</body>
 </html>
