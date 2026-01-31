@@ -1,117 +1,158 @@
+/* FONTE CLEAN */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #eaf1ff;
-  padding: 20px;
+  font-family: 'Inter', Arial, sans-serif;
+  background: #f2f6ff;
+  padding: 16px;
+  font-size: 14px;
+  color: #1f2937;
 }
 
 .container {
-  max-width: 1000px;
+  max-width: 900px;
   margin: auto;
   background: #ffffff;
-  padding: 30px;
-  border-radius: 18px;
-  box-shadow: 0 0 15px rgba(0,0,0,.08);
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
 }
 
 .center { text-align: center; }
 
+/* DASHBOARD */
 .dashboard {
   display: flex;
   justify-content: center;
-  gap: 40px;
-  margin-top: 40px;
+  gap: 32px;
+  margin-top: 32px;
 }
 
 .card-link {
   background: #1f4fa3;
-  color: white;
-  padding: 30px;
-  width: 220px;
-  border-radius: 18px;
+  color: #ffffff;
+  padding: 26px;
+  width: 200px;
+  border-radius: 16px;
   text-decoration: none;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 500;
 }
 
+/* FORMULÁRIOS */
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 14px;
 }
 
 label {
-  font-weight: bold;
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1f4fa3;
 }
 
 input {
   width: 100%;
   padding: 8px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #cfd6e4;
+  background: #ffffff;
+  font-size: 13px;
 }
 
+/* TABELAS */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
+  margin-top: 12px;
+}
+
+th {
+  background: #e8f0ff;
+  color: #1f4fa3;
+  font-weight: 500;
 }
 
 th, td {
-  border: 1px solid #cfdfff;
+  border: 1px solid #dbe4ff;
   padding: 8px;
-  text-align: center;
+  text-align: left;
+}
+
+td input {
+  width: 80px;
+}
+
+/* BOTÕES */
+.buttons {
+  margin: 22px 0;
+  display: flex;
+  gap: 14px;
 }
 
 button {
-  padding: 12px 20px;
+  padding: 10px 18px;
   border: none;
   border-radius: 10px;
   background: #1f4fa3;
   color: white;
+  font-weight: 500;
 }
 
-.print { background: #5a7edc; }
-
-.buttons {
-  margin: 25px 0;
-  display: flex;
-  gap: 15px;
+.print {
+  background: #4f7fdc;
 }
 
+/* RELATÓRIO */
 .relatorio h2 {
   background: #1f4fa3;
   color: white;
-  padding: 12px;
-  border-radius: 12px;
+  padding: 10px;
+  border-radius: 10px;
   text-align: center;
+  font-size: 16px;
 }
 
 .card {
-  background: #f4f8ff;
-  border: 1px solid #cfdfff;
-  border-radius: 16px;
-  padding: 20px;
-  margin-top: 20px;
+  background: #f7faff;
+  border: 1px solid #dbe4ff;
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 18px;
+}
+
+.card h3 {
+  color: #1f4fa3;
+  font-size: 14px;
 }
 
 .assinatura {
   text-align: center;
-  margin-top: 60px;
+  margin-top: 50px;
 }
 
+/* LOGIN */
 .login-box input {
-  width: 100%;
   margin: 10px 0;
 }
 
 .erro {
-  color: red;
+  color: #c0392b;
+  font-size: 13px;
 }
 
+/* IMPRESSÃO */
 @media print {
   input, button, .dashboard {
     display: none !important;
   }
-  body { background: white; }
-  .container { box-shadow: none; }
+  body {
+    background: white;
+    font-size: 12px;
+  }
+  .container {
+    box-shadow: none;
+    padding: 0;
+  }
 }
