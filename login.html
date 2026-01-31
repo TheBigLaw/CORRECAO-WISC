@@ -5,19 +5,13 @@
   <title>Login | WISC-IV</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-
-<div class="container center login-box">
-  <h1 style="color:#1f4fa3">WISC-IV</h1>
-  <p>Acesso restrito</p>
-
-  <input type="text" id="usuario" placeholder="Usuário">
-  <input type="password" id="senha" placeholder="Senha">
-
-  <button onclick="login()">Entrar</button>
-  <p id="erro" class="erro"></p>
-</div>
-
-<script src="script.js"></script>
+<body class="center">
+  <div class="card">
+    <h2>WISC-IV</h2>
+    <input id="user" placeholder="Usuário">
+    <input id="pass" type="password" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
