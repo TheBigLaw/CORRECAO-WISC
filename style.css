@@ -1,16 +1,16 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background: #eef1f4;
+  background: #eaf1ff;
   padding: 20px;
 }
 
 .container {
   max-width: 1000px;
   margin: auto;
-  background: #fff;
+  background: #ffffff;
   padding: 30px;
-  border-radius: 6px;
-  box-shadow: 0 0 10px rgba(0,0,0,.08);
+  border-radius: 18px;
+  box-shadow: 0 0 15px rgba(0,0,0,.08);
 }
 
 .center { text-align: center; }
@@ -18,82 +18,80 @@ body {
 .dashboard {
   display: flex;
   justify-content: center;
-  gap: 30px;
+  gap: 40px;
   margin-top: 40px;
 }
 
-.card {
-  width: 200px;
+.card-link {
+  background: #1f4fa3;
+  color: white;
   padding: 30px;
-  background: #2c3e50;
-  color: #fff;
+  width: 220px;
+  border-radius: 18px;
   text-decoration: none;
-  border-radius: 6px;
   font-size: 18px;
 }
-
-h1, h2 { color: #2c3e50; }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 12px;
+  gap: 16px;
+}
+
+label {
+  font-weight: bold;
+  font-size: 13px;
 }
 
 input {
-  padding: 10px;
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
   border: 1px solid #ccc;
-  border-radius: 4px;
 }
-
-.buttons {
-  margin: 30px 0;
-  display: flex;
-  gap: 15px;
-}
-
-button {
-  padding: 12px 20px;
-  background: #2c3e50;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-}
-
-button.print { background: #7f8c8d; }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 15px;
 }
 
 th, td {
-  border: 1px solid #ccc;
+  border: 1px solid #cfdfff;
   padding: 8px;
   text-align: center;
 }
 
-@media print {
-  .buttons { display: none; }
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #1f4fa3;
+  color: white;
 }
 
-.relatorio {
-  margin-top: 40px;
-  font-size: 14px;
+.print { background: #5a7edc; }
+
+.buttons {
+  margin: 25px 0;
+  display: flex;
+  gap: 15px;
 }
 
 .relatorio h2 {
+  background: #1f4fa3;
+  color: white;
+  padding: 12px;
+  border-radius: 12px;
   text-align: center;
-  text-transform: uppercase;
 }
 
-.relatorio table {
-  margin-top: 15px;
-}
-
-.relatorio hr {
-  margin: 25px 0;
+.card {
+  background: #f4f8ff;
+  border: 1px solid #cfdfff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 20px;
 }
 
 .assinatura {
@@ -111,16 +109,9 @@ th, td {
 }
 
 @media print {
-  body {
-    background: #fff;
-  }
-
   input, button, .dashboard {
     display: none !important;
   }
-
-  .container {
-    box-shadow: none;
-    padding: 0;
-  }
+  body { background: white; }
+  .container { box-shadow: none; }
 }
