@@ -3,19 +3,19 @@
 const LAUDOS_KEY = "empresa_laudos_wisciv_v1";
 
 let NORMAS = null;
+
 async function carregarNormas(){
   if (NORMAS) return NORMAS;
 
-  const url = "data/normas-wisciv.json";
+  const url = "Correcao_testes/WISC_IV/data/normas-wisciv.json";
   const resp = await fetch(url, { cache: "no-store" });
 
   if (!resp.ok) {
-    throw new Error(`Falha ao carregar : ${url} (HTTP ${resp.status})`);
+    throw new Error(`Falha ao carregar normas: ${url} (HTTP ${resp.status})`);
   }
 
   const json = await resp.json();
 
-  // checagem mínima para evitar "carregou mas veio vazio"
   if (!json || typeof json !== "object" || Object.keys(json).length === 0) {
     throw new Error("Normas carregadas, mas o JSON veio vazio ou inválido.");
   }
@@ -23,7 +23,6 @@ async function carregarNormas(){
   NORMAS = json;
   return NORMAS;
 }
-
 
 // Subtestes (ordem objetiva)
 const SUBTESTES = [
