@@ -7,9 +7,7 @@
   --texto: #1e2a38;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -23,7 +21,7 @@ header {
   position: fixed;
   top: 0;
   width: 100%;
-  height: 96px;                 /* TOPO MAIS GROSSO */
+  height: 96px;
   background: var(--azul-escuro);
   display: flex;
   align-items: center;
@@ -32,13 +30,17 @@ header {
   z-index: 100;
 }
 
+header .logo {
+  height: 48px;
+}
+
 /* BOTÃO VOLTAR — NÃO OCUPA O HEADER */
 header .voltar {
   position: absolute;
   left: 24px;
   top: 50%;
   transform: translateY(-50%);
-  width: auto;                 /* <<< ESSENCIAL */
+  width: auto;                 /* ESSENCIAL */
   padding: 10px 14px;
   background: rgba(255,255,255,0.18);
   border: none;
@@ -46,29 +48,23 @@ header .voltar {
   font-size: 14px;
   border-radius: 10px;
   cursor: pointer;
-  white-space: nowrap;         /* evita esticar */
+  white-space: nowrap;
 }
 
 header .voltar:hover {
   background: rgba(255,255,255,0.28);
 }
 
-
-/* LOGO CENTRAL REAL */
-header .logo {
-  height: 48px;
-}
-
 /* ================= CONTEÚDO ================= */
 main {
   max-width: 900px;
-  margin: 140px auto 60px; /* MAIS ESPAÇO POR CAUSA DO HEADER */
+  margin: 140px auto 60px;
   padding: 0 20px;
 }
 
 /* ================= CARDS ================= */
 .card {
-  background: #ffffff;
+  background: #fff;
   border-radius: 18px;
   padding: 30px;
   margin-bottom: 34px;
@@ -89,8 +85,10 @@ input {
   border: 1px solid #cfd8dc;
   font-size: 14px;
   margin-bottom: 22px;
+  background: #ffffff;
 }
 
+/* Botões gerais (formulários) */
 button {
   width: 100%;
   padding: 14px;
@@ -107,12 +105,6 @@ button:hover {
 }
 
 /* ================= GRID ================= */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 26px;
-}
-
 .grid-form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
