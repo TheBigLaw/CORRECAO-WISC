@@ -122,6 +122,44 @@ function montarInputsSubtestes(){
   });
 }
 
+function atualizarPreviewIdade(){
+  const nasc = document.getElementById("dataNascimento")?.value;
+  const apl  = document.getElementById("dataAplicacao")?.value;
+
+  const idadeEl = document.getElementById("idadeCalculada");
+  const faixaEl = document.getElementById("faixaCalculada");
+
+  if (!idadeEl || !faixaEl) return;
+
+  if (!nasc || !apl) {
+    idadeEl.textContent = "";
+    faixaEl.textContent = "";
+    return;
+  }
+
+  const idade = calcularIdade(nasc, apl);
+  if (!idade) {
+    idadeEl.textContent = "Datas inválidas.";
+    faixaEl.textContent = "";
+    return;
+  }
+
+  idadeEl.textContent =
+    `Idade na aplicação: ${idade.anos} anos e ${idade.meses} meses.`;
+
+  carregarNormas()
+    .then(normas => {
+      const faixa = faixaEtaria(normas, idade);
+      faixaEl.textContent = faixa
+        ? `Faixa normativa: ${faixa}`
+        : "Faixa normativa: não encontrada.";
+    })
+    .catch(() => {
+      faixaEl.textContent = "Erro ao carregar normas.";
+    });
+}
+
+
 // ================= INIT =================
 (function init(){
   if (document.getElementById("tbodySubtestes")){
