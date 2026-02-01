@@ -350,9 +350,98 @@ async function calcular(salvar){
 
     montarRelatorio({ nome, nasc, apl, idade, faixa, resultados, indicesInfo, qiInfo });
 
+ async function calcular(salvar){
+  try{
+    // 1) Carrega normas (se falhar aqui, a mensagem vai ser específica)
+    const normas = await carregarNormas();
+
+    const nome = (document.getElementById("nome")?.value || "").trim();
+    const nasc = document.getElementById("dataNascimento")?.value;
+    const apl  = document.getElementById("dataAplicacao")?.value;
+
+    if(!nome || !nasc || !apl){
+      alert("Preencha Nome, Nascimento e Aplicação.");
+      return;
+    }
+
+    const idade = calcularIdade(nasc, apl);
+    if(!idade){
+      alert("Datas inválidas.");
+      return;
+    }
+
+    const faixa = faixaEtaria(normas, idade);
+    if(!faixa){
+      alert("Faixa normativa não encontrada.");
+      return;
+    }
+
+    const resultados = {};
+    const pondByCode = {};
+
+    for(const s of SUBTESTES){
+      const v = document.getElementById(s.id)?.value;
+      if(v === "" || v == null) continue;
+
+      const bruto = Number(v);
+      if(Number.isNaN(bruto) || bruto < 0){
+        alert(`Valor inválido em ${s.nome}`);
+        return;
+      }
+
+      const pond = brutoParaPonderado(normas, faixa, s.codigo, bruto);
+      if(pond == null){
+        alert(`PB fora da norma em ${s.nome} (${s.codigo}) para faixa ${faixa}`);
+        return;
+      }
+
+      resultados[s.codigo] = {
+        nome: s.nome,
+        codigo: s.codigo,
+        bruto,
+        ponderado: pond,
+        classificacao: classificarPonderado(pond)
+      };
+      pondByCode[s.codigo] = pond;
+    }
+
+    if(Object.keys(pondByCode).length === 0){
+      alert("Preencha ao menos um subteste.");
+      return;
+    }
+
+    const indicesInfo = {
+      ICV: somarIndice(pondByCode, INDICES.ICV),
+      IOP: somarIndice(pondByCode, INDICES.IOP),
+      IMO: somarIndice(pondByCode, INDICES.IMO),
+      IVP: somarIndice(pondByCode, INDICES.IVP),
+    };
+
+    const qiInfo = somarQI(pondByCode);
+
+    // 2) Monta relatório (se falhar, vamos saber no console)
+    montarRelatorio({ nome, nasc, apl, idade, faixa, resultados, indicesInfo, qiInfo });
+
+    // 3) Se for salvar, garante que o html2pdf existe e gera PDF
     if(salvar){
+      if(typeof window.html2pdf !== "function"){
+        alert(
+          "Não foi possível gerar o PDF porque a biblioteca html2pdf não carregou.\n" +
+          "Verifique se o script do html2pdf está incluído na página e se não houve erro 404/ bloqueio."
+        );
+        return;
+      }
+
       const rel = document.getElementById("relatorio");
-      await html2pdf().set({
+      if(!rel){
+        alert("Relatório não encontrado na página (div #relatorio).");
+        return;
+      }
+
+      // garante que está visível antes do PDF
+      rel.style.display = "block";
+
+      await window.html2pdf().set({
         margin: 10,
         filename: `WISC-IV_${nome}.pdf`,
         html2canvas: { scale: 2 },
@@ -374,9 +463,30 @@ async function calcular(salvar){
 
   }catch(e){
     console.error(e);
-    alert("Erro ao calcular. Consulte o suporte!");
+
+    const msg = String(e?.message || e);
+
+    // Mensagens mais úteis:
+    if(msg.includes("Falha ao carregar normas") || msg.includes("Normas carregadas")){
+      alert(msg);
+      return;
+    }
+
+    if(msg.includes("html2pdf") || msg.includes("HTMLCanvasElement") || msg.includes("canvas")){
+      alert(
+        "Erro ao gerar PDF. Veja o Console (F12) para o detalhe.\n" +
+        "Geralmente é html2pdf/html2canvas não carregado, bloqueado ou falha ao renderizar."
+      );
+      return;
+    }
+
+    alert(
+      "Erro ao calcular/gerar laudo. Abra o Console (F12) para ver o erro exato.\n" +
+      "Mensagem: " + msg
+    );
   }
 }
+
 
 let chartSub = null;
 let chartIdx = null;
