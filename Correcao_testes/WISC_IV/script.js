@@ -1,4 +1,4 @@
-// tests/wisciv/script.js
+// Correcao_testes/WISC_IV/script.js
 
 const LAUDOS_KEY = "empresa_laudos_wisciv_v1";
 
@@ -53,20 +53,66 @@ function calcularIdade(nascISO, aplISO) {
   return { anos, meses, totalMeses: anos * 12 + meses };
 }
 
+/**
+ * Converte string de faixa em {minMeses, maxMeses} aceitando:
+ *  - "6:0-6:3"  (anos:meses - anos:meses)
+ *  - "6:0-0:6"  (caso seu JSON tenha invertido, interpretamos como 6:0-6:0??)
+ *  - "72-83"    (caso existam faixas só em meses)
+ */
+function parseFaixa(faixaStr){
+  if(!faixaStr || typeof faixaStr !== "string") return null;
+
+  // tenta "A:M-B:M" ou "A:M-0:M" etc
+  if(faixaStr.includes("-") && faixaStr.includes(":")){
+    const [ini, fim] = faixaStr.split("-");
+    if(!ini || !fim) return null;
+
+    const [aiRaw, miRaw] = ini.split(":");
+    const [afRaw, mfRaw] = fim.split(":");
+    const ai = Number(aiRaw), mi = Number(miRaw);
+    const af = Number(afRaw), mf = Number(mfRaw);
+    if([ai,mi,af,mf].some(x => Number.isNaN(x))) return null;
+
+    // Caso raro: fim vem como "0:6" por erro de formatação.
+    // Se af === 0 e ai > 0, interpretamos como "ai:mi - ai:mf"
+    // (mantém dentro do mesmo ano)
+    let min = ai * 12 + mi;
+    let max = af * 12 + mf;
+    if(af === 0 && ai > 0){
+      max = ai * 12 + mf;
+    }
+
+    // garante min<=max
+    if(max < min) [min, max] = [max, min];
+    return { minMeses: min, maxMeses: max };
+  }
+
+  // tenta "72-83" (meses)
+  if(/^\d+\s*-\s*\d+$/.test(faixaStr)){
+    const [a,b] = faixaStr.split("-").map(x => Number(String(x).trim()));
+    if([a,b].some(Number.isNaN)) return null;
+    const minMeses = Math.min(a,b);
+    const maxMeses = Math.max(a,b);
+    return { minMeses, maxMeses };
+  }
+
+  return null;
+}
+
 function faixaEtaria(normas, idade) {
   if (!idade) return null;
   const total = idade.totalMeses;
 
-  for (const faixa of Object.keys(normas || {})) {
-    const [ini, fim] = faixa.split("-");
-    if (!ini || !fim) continue;
-    const [ai, mi] = ini.split(":").map(Number);
-    const [af, mf] = fim.split(":").map(Number);
-    if ([ai,mi,af,mf].some(x => Number.isNaN(x))) continue;
+  const keys = Object.keys(normas || {});
+  // ordena por minMeses para não depender da ordem do JSON
+  const parsed = keys
+    .map(k => ({ k, p: parseFaixa(k) }))
+    .filter(x => x.p && Number.isFinite(x.p.minMeses) && Number.isFinite(x.p.maxMeses))
+    .sort((a,b) => a.p.minMeses - b.p.minMeses);
 
-    const min = ai * 12 + mi;
-    const max = af * 12 + mf;
-    if (total >= min && total <= max) return faixa;
+  for(const item of parsed){
+    const { k, p } = item;
+    if(total >= p.minMeses && total <= p.maxMeses) return k;
   }
   return null;
 }
@@ -314,7 +360,7 @@ async function calcular(salvar){
 
   }catch(e){
     console.error(e);
-    alert("Erro ao calcular. Verifique normas-wisciv.json em /tests/wisciv/data/.");
+    alert("Erro ao calcular. Verifique se data/normas-wisciv.json está em Correcao_testes/WISC_IV/data/.");
   }
 }
 
@@ -332,7 +378,8 @@ function montarRelatorio(data){
   rel.innerHTML = `
     <div class="topline">
       <div style="display:flex;align-items:center;gap:12px;">
-        <img class="logo" src="/logo.png" alt="Logo" onerror="this.style.display='none'">
+        <!-- IMPORTANTE: sem caminho absoluto. Usamos a logo do sistema -->
+        <img class="logo" src="logo2.png" alt="Logo" onerror="this.style.display='none'">
         <div>
           <div style="font-weight:800;color:#0d47a1;font-size:16px;">Relatório – WISC-IV</div>
           <div class="muted">Gerado automaticamente</div>
@@ -385,7 +432,7 @@ function montarRelatorio(data){
       <table class="table" style="margin-top:12px;">
         <thead><tr><th>Medida</th><th>Soma (ponderados)</th><th>Subtestes usados</th></tr></thead>
         <tbody>
-          ${Object.entries(INDICES).map(([k, def])=>{
+          ${Object.entries(INDICES).map(([k])=>{
             const info = indicesInfo[k];
             return `
               <tr>
