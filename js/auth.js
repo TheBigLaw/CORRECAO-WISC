@@ -1,8 +1,8 @@
-const AUTH_KEY = "empresa_auth_v1";
-const AUTH_USER_KEY = "empresa_auth_user_v1";
+const AUTH_KEY = "equilibrium_auth_v1";
+const AUTH_USER_KEY = "equilibrium_auth_user_v1";
 
-// Base do seu repositório no GitHub Pages
-const REPO_BASE = "/CORRECAO-WISC/";
+// base do seu repo no GitHub Pages
+const REPO_BASE = "/Equilibrium_Neuro/";
 
 const USERS = [
   { id: "1", label: "Usuário 1" },
