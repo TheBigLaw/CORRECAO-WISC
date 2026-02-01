@@ -7,7 +7,7 @@ async function carregarNormas(){
   if (NORMAS) return NORMAS;
 
   // caminho FIXO correto no GitHub Pages (não depende do <base>)
-  const url = "Correcao_testes/WISC_IV/data/normas-wisciv.json";
+  const url = "/Equilibrium_Neuro/Correcao_testes/WISC_IV/data/normas-wisciv.json";
   const resp = await fetch(url, { cache: "no-store" });
 
   if (!resp.ok) {
