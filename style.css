@@ -98,8 +98,13 @@ body{
   margin: 18px auto;
 }
 
+/* espaçamento padrão dentro de cards */
+.card > * + *{
+  margin-top: 12px;
+}
+
 h1,h2,h3{
-  margin: 0 0 14px;
+  margin: 0;
   font-weight: 700;
   letter-spacing: -0.2px;
 }
@@ -146,6 +151,7 @@ input:focus, select:focus{
   width:100%;
   border-collapse: collapse;
   font-size: 13px;
+  margin-top: 8px;
 }
 .table th, .table td{
   border-bottom: 1px solid var(--border);
@@ -206,28 +212,47 @@ button{
   justify-content:center;
   padding: 18px;
 }
+
 .login-card{
   width: 100%;
-  max-width: 380px;
+  max-width: 420px;
   background: #fff;
   border-radius: 22px;
   box-shadow: 0 26px 60px rgba(0,0,0,.30);
   padding: 34px 28px;
-  text-align:center;
 }
+
 .login-card .logo{
-  height: 70px;
-  margin: 4px auto 18px;
+  height: 74px;
+  margin: 0 auto 16px;
   display:block;
 }
+
+.login-card .muted{
+  text-align:center;
+  margin: 0 0 14px;
+}
+
+.login-form{
+  display:flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-form .btn-primary{
+  width: 100%;
+  margin-top: 6px;
+}
+
 .error{
   color: #c62828;
   font-size: 13px;
   margin-top: 10px;
   min-height: 18px;
+  text-align:center;
 }
 
-/* Report (WISC-IV) */
+/* Report */
 .report{ margin-top: 18px; }
 .report .topline{
   display:flex;
@@ -248,7 +273,7 @@ button{
   padding: 14px;
 }
 
-/* Matriz WISC (PB->Ponderado + contribuição) */
+/* Matriz WISC */
 .matrix-card{
   background: #fff;
   border: 1px solid var(--border);
