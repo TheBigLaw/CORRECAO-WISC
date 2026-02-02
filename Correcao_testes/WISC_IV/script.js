@@ -439,11 +439,13 @@ function montarRelatorio(data) {
   const matriz = renderMatrizConversao({ resultados, indicesInfo, qiInfo });
   const perfil = renderPerfilSubtestes(resultados);
 
+    const LOGO_URL = new URL("logo2.png", document.baseURI).href;
+
   rel.style.display = "block";
   rel.innerHTML = `
     <div class="report">
       <div class="report-header">
-        <img class="report-logo report-logo-top" src="logo2.png" alt="Logo" onerror="this.style.display='none'">
+        <img class="report-logo report-logo-top" src="${LOGO_URL}" alt="Logo" onerror="this.style.display='none'">
         <div class="report-title">
           <div class="t1">Relatório – WISC-IV</div>
           <div class="t2">Conversão PB → Ponderado e somatórios por índice</div>
@@ -462,74 +464,85 @@ function montarRelatorio(data) {
         </div>
       </div>
 
-      <div class="section no-break">
-        <h3>Perfil dos Pontos Ponderados dos Subtestes</h3>
-        <div class="perfil-card">
-          ${perfil}
-          <div class="canvas-wrap perfil-canvas"><canvas id="grafSub" height="220"></canvas></div>
+      <!-- GRID 2 COLUNAS: PERFIL + ÍNDICES/QIT -->
+      <div class="report-grid-2">
+        <div class="section report-item no-break">
+          <h3>Perfil dos Pontos Ponderados dos Subtestes</h3>
+          <div class="perfil-card">
+            ${perfil}
+            <div class="canvas-wrap perfil-canvas">
+              <canvas id="grafSub" height="170"></canvas>
+            </div>
+          </div>
+          <p class="muted" style="margin:10px 0 0;">
+            A faixa azul indica a região média aproximada (9–11) dos pontos ponderados.
+          </p>
         </div>
-        <p class="muted" style="margin:10px 0 0;">
-          A faixa azul indica a região média aproximada (9–11) dos pontos ponderados.
-        </p>
-      </div>
 
-      <div class="section">
-        <h3>Conversão PB → Ponderado e contribuição nos Índices</h3>
-        <div class="matrix-card no-break">${matriz}</div>
-        <p class="muted" style="margin:10px 0 0;">
-          Células azuis indicam subtestes usados na soma do índice/QIT. Suplementares podem aparecer entre parênteses.
-        </p>
-      </div>
+        <div class="section report-item no-break">
+          <h3>Índices e QIT (somatórios)</h3>
+          <div class="canvas-wrap">
+            <canvas id="grafIdx" height="150"></canvas>
+          </div>
 
-      <div class="section">
-        <h3>Subtestes (detalhamento)</h3>
-        <table class="table">
-          <thead><tr><th>Subteste</th><th>PB</th><th>Ponderado</th><th>Classificação</th></tr></thead>
-          <tbody>
-            ${Object.values(resultados).map(r=>`
+          <table class="table" style="margin-top:12px;">
+            <thead><tr><th>Medida</th><th>Soma (ponderados)</th><th>Subtestes usados</th></tr></thead>
+            <tbody>
+              ${Object.entries(INDICES).map(([k, def])=>{
+                const info = indicesInfo[k];
+                return `
+                  <tr>
+                    <td><b>${k}</b></td>
+                    <td>${info.soma ?? "—"}</td>
+                    <td>${(info.usados||[]).join(", ") || "—"}</td>
+                  </tr>
+                `;
+              }).join("")}
               <tr>
-                <td><b>${r.nome}</b> <span class="muted">(${r.codigo})</span></td>
-                <td>${r.bruto}</td>
-                <td>${r.ponderado}</td>
-                <td>${r.classificacao}</td>
+                <td><b>QIT</b></td>
+                <td>${qiInfo.soma ?? "—"}</td>
+                <td>${(qiInfo.usados||[]).join(", ") || "—"}</td>
               </tr>
-            `).join("")}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div class="section">
-        <h3>Índices e QIT (somatórios)</h3>
-        <div class="canvas-wrap"><canvas id="grafIdx" height="180"></canvas></div>
+      <!-- GRID 2 COLUNAS: MATRIZ + SUBTESTES -->
+      <div class="report-grid-2">
+        <div class="section report-item no-break">
+          <h3>Conversão PB → Ponderado e contribuição nos Índices</h3>
+          <div class="matrix-card no-break">${matriz}</div>
+          <p class="muted" style="margin:10px 0 0;">
+            Células azuis indicam subtestes usados na soma do índice/QIT. Suplementares podem aparecer entre parênteses.
+          </p>
+        </div>
 
-        <table class="table" style="margin-top:12px;">
-          <thead><tr><th>Medida</th><th>Soma (ponderados)</th><th>Subtestes usados</th></tr></thead>
-          <tbody>
-            ${Object.entries(INDICES).map(([k, def])=>{
-              const info = indicesInfo[k];
-              return `
+        <div class="section report-item no-break">
+          <h3>Subtestes (detalhamento)</h3>
+          <table class="table">
+            <thead><tr><th>Subteste</th><th>PB</th><th>Ponderado</th><th>Classificação</th></tr></thead>
+            <tbody>
+              ${Object.values(resultados).map(r=>`
                 <tr>
-                  <td><b>${k}</b></td>
-                  <td>${info.soma ?? "—"}</td>
-                  <td>${(info.usados||[]).join(", ") || "—"}</td>
+                  <td><b>${r.nome}</b> <span class="muted">(${r.codigo})</span></td>
+                  <td>${r.bruto}</td>
+                  <td>${r.ponderado}</td>
+                  <td>${r.classificacao}</td>
                 </tr>
-              `;
-            }).join("")}
-            <tr>
-              <td><b>QIT</b></td>
-              <td>${qiInfo.soma ?? "—"}</td>
-              <td>${(qiInfo.usados||[]).join(", ") || "—"}</td>
-            </tr>
-          </tbody>
-        </table>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div class="report-footer">
         <div class="muted">Documento gerado automaticamente</div>
-        <img class="report-logo report-logo-bottom" src="logo2.png" alt="Logo" onerror="this.style.display='none'">
+        <img class="report-logo report-logo-bottom" src="${LOGO_URL}" alt="Logo" onerror="this.style.display='none'">
       </div>
     </div>
   `;
+
 
   desenharGraficos(resultados, indicesInfo, qiInfo);
 }
