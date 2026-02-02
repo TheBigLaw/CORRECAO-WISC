@@ -395,31 +395,36 @@ button{
 
 }
 
-/* =====================================================
-   CHECKLIST 1 — Layout compacto do relatório (opção 1)
-   Não altera estrutura, apenas apresentação
-   ===================================================== */
 
-/* deixa o relatório mais estreito e centralizado */
-.report{
-  max-width: 900px;
-  margin: 0 auto;
+/* =========================================
+   CHECKLIST 1 — Cards em formato RETRATO
+   (apenas tamanho de cada item, sem mudar estrutura)
+   Baseado no modelo oficial do WISC-IV
+   ========================================= */
+
+.report .section{
+  max-width: 420px;       /* item mais estreito */
+  margin: 0 auto 18px;    /* centraliza + espaço vertical */
 }
 
-/* grid de 2 colunas para os blocos do relatório */
-.report-grid-2{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  align-items: start;
+.report .canvas-wrap{
+  max-width: 380px;       /* gráfico mais estreito */
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* em telas menores vira 1 coluna */
-@media (max-width: 980px){
-  .report-grid-2{
-    grid-template-columns: 1fr;
-  }
+.report .perfil-canvas{
+  height: 560px;          /* mais alto para acomodar canvas 520 */
 }
 
-/* gráficos mais compactos */
-.canvas
+.report table.table{
+  max-width: 420px;       /* tabelas não esticam */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.report .matrix-card{
+  max-width: 420px;       /* matriz no mesmo padrão */
+  margin-left: auto;
+  margin-right: auto;
+}
