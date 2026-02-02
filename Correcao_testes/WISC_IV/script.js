@@ -792,7 +792,7 @@ temp.remove();
 
 }
 
-(function init(){
+document.addEventListener("DOMContentLoaded", ()=>{
   // novo-laudo
   if(document.getElementById("tbodySubtestes")){
     montarInputsSubtestes();
@@ -804,4 +804,5 @@ temp.remove();
   if(document.getElementById("listaLaudos")){
     renderListaLaudos();
   }
-})();
+});
+
