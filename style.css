@@ -262,3 +262,131 @@ button{
   padding: 16px;
 }
   
+/* (SEU CSS ATUAL AQUI - mantido) */
+
+/* ================= RELATÓRIO (PDF) ================= */
+.report{ background:#fff; border-radius:18px; }
+.report-header{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px; padding:16px 18px; border-bottom:2px solid rgba(13,71,161,.15);
+}
+.report-title{ flex:1; text-align:center; }
+.report-title .t1{ font-weight:800; color:#0d47a1; font-size:18px; letter-spacing:.2px; }
+.report-title .t2{ color:rgba(0,0,0,.55); font-size:12px; margin-top:4px; }
+.report-meta{ text-align:right; min-width:170px; }
+.report-logo{ width:42px; height:42px; object-fit:contain; }
+.report-logo-top{ margin-left:2px; }
+.report-logo-bottom{ width:36px; height:36px; }
+
+.report-info{ padding:14px 18px; }
+.info-grid{
+  display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;
+}
+.info-grid .k{ color:#0d47a1; font-weight:700; }
+.info-grid .v{ color:#111; font-weight:600; }
+
+.perfil-card{
+  border:1px solid rgba(13,71,161,.18);
+  border-radius:18px;
+  padding:14px;
+  overflow:hidden;
+}
+.perfil-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  margin-bottom:10px;
+}
+.perfil-table th, .perfil-table td{
+  border:1px solid rgba(13,71,161,.18);
+  padding:8px 6px;
+  text-align:center;
+  font-size:12px;
+}
+.perfil-table thead th.perfil-group{
+  background:rgba(13,71,161,.10);
+  font-weight:800;
+  color:#0d47a1;
+}
+.perfil-table thead th.perfil-code{
+  background:rgba(13,71,161,.06);
+  font-weight:800;
+  color:#0d47a1;
+}
+.perfil-table td.perfil-val{
+  background:#fff;
+  font-weight:800;
+  color:#0d47a1;
+}
+.perfil-canvas{ height:260px; padding-top:8px; }
+
+.matrix-card{
+  border:1px solid rgba(13,71,161,.18);
+  border-radius:18px;
+  padding:12px;
+  overflow:auto;
+  background:#fff;
+}
+
+.wisc-matrix{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  overflow:hidden;
+}
+.wisc-matrix th, .wisc-matrix td{
+  border:1px solid rgba(13,71,161,.18);
+  padding:8px 8px;
+  vertical-align:middle;
+  font-size:12px;
+}
+.wisc-matrix thead th{
+  background:rgba(13,71,161,.08);
+  color:#0d47a1;
+  font-weight:800;
+}
+.wisc-matrix .idx{ text-align:center; width:64px; }
+.wisc-matrix .col-sub{ min-width:260px; }
+.wisc-matrix .col-pb, .wisc-matrix .col-pp{ width:90px; text-align:center; }
+.wisc-matrix td.fill{ background:rgba(13,71,161,.12); }
+.wisc-matrix td.empty{ background:rgba(13,71,161,.05); }
+.wisc-matrix .pill{
+  display:inline-block;
+  min-width:32px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#0d47a1;
+  color:#fff;
+  font-weight:800;
+  font-size:12px;
+}
+.wisc-matrix .pill.sup{ background:rgba(13,71,161,.78); }
+.wisc-matrix tfoot td{
+  font-weight:900;
+  background:rgba(13,71,161,.08);
+  text-align:center;
+}
+.wisc-matrix tfoot .sum-label{
+  text-align:left;
+  color:#0d47a1;
+}
+
+.report-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 18px 16px;
+  border-top:2px solid rgba(13,71,161,.15);
+}
+
+.no-break{ break-inside:avoid; page-break-inside:avoid; }
+
+/* Melhor comportamento de impressão */
+@media print{
+  body{ background:#fff !important; }
+  .app-header, .back-btn, .exit-btn{ display:none !important; }
+  .main{ padding:0 !important; }
+  .card{ box-shadow:none !important; border:none !important; }
+  .matrix-card, .perfil-card{ border:1px solid rgba(0,0,0,.15) !important; }
+}
