@@ -608,7 +608,7 @@ function montarRelatorio(data) {
     </div>
   `;
 
-
+  aplicarLayoutChecklist1(rel);
   desenharGraficos(resultados, indicesInfo, qiInfo);
 }
 
