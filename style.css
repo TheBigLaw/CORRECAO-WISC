@@ -148,12 +148,12 @@ input:focus, select:focus{
 .table{
   width:100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 10px;
   margin-top: 8px;
 }
 .table th, .table td{
   border-bottom: 1px solid var(--border);
-  padding: 10px 10px;
+  padding: 7px 7px;
   text-align:left;
 }
 .table th{
@@ -271,8 +271,8 @@ button{
   gap:16px; padding:16px 18px; border-bottom:2px solid rgba(13,71,161,.15);
 }
 .report-title{ flex:1; text-align:center; }
-.report-title .t1{ font-weight:800; color:#0d47a1; font-size:18px; letter-spacing:.2px; }
-.report-title .t2{ color:rgba(0,0,0,.55); font-size:12px; margin-top:4px; }
+.report-title .t1{ font-weight:800; color:#0d47a1; font-size:15px; letter-spacing:.2px; }
+.report-title .t2{ color:rgba(0,0,0,.55); font-size:10px; margin-top:4px; }
 .report-meta{ text-align:right; min-width:170px; }
 .report-logo{ width:42px; height:42px; object-fit:contain; }
 .report-logo-top{ margin-left:2px; }
@@ -299,9 +299,9 @@ button{
 }
 .perfil-table th, .perfil-table td{
   border:1px solid rgba(13,71,161,.18);
-  padding:8px 6px;
+  padding:6px 4px;
   text-align:center;
-  font-size:12px;
+  font-size:10,5px;
 }
 .perfil-table thead th.perfil-group{
   background:rgba(13,71,161,.10);
@@ -336,9 +336,9 @@ button{
 }
 .wisc-matrix th, .wisc-matrix td{
   border:1px solid rgba(13,71,161,.18);
-  padding:8px 8px;
+  padding:6px 6px;
   vertical-align:middle;
-  font-size:12px;
+  font-size:10,5px;
 }
 .wisc-matrix thead th{
   background:rgba(13,71,161,.08);
@@ -352,13 +352,13 @@ button{
 .wisc-matrix td.empty{ background:rgba(13,71,161,.05); }
 .wisc-matrix .pill{
   display:inline-block;
-  min-width:32px;
-  padding:4px 8px;
+  min-width:28px;
+  padding:3px 6px;
   border-radius:999px;
   background:#0d47a1;
   color:#fff;
   font-weight:800;
-  font-size:12px;
+  font-size:10,5px;
 }
 .wisc-matrix .pill.sup{ background:rgba(13,71,161,.78); }
 .wisc-matrix tfoot td{
@@ -389,4 +389,8 @@ button{
   .main{ padding:0 !important; }
   .card{ box-shadow:none !important; border:none !important; }
   .matrix-card, .perfil-card{ border:1px solid rgba(0,0,0,.15) !important; }
+  .matrix-card{ overflow: visible !important; }
+  .perfil-card{ overflow: visible !important; }
+}
+
 }
