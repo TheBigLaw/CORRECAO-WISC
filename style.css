@@ -162,6 +162,19 @@ input:focus, select:focus{
   background: rgba(30,136,229,.06);
 }
 
+/* [WISC-REL-01] Gráficos mais compactos (sem afetar tabelas) */
+#relatorio .canvas-wrap{
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+#relatorio canvas#grafSub,
+#relatorio canvas#grafIdx{
+  display:block;
+  width: 100% !important;
+}
+
 .actions{
   display:flex;
   gap: 12px;
