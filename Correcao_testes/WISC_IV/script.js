@@ -5,20 +5,9 @@ const LAUDOS_KEY = "empresa_laudos_wisciv_v1";
 let NORMAS = null;
 async function carregarNormas(){
   if(NORMAS) return NORMAS;
-
-  // Mantém relativo à página atual (novo-laudo.html está em /Correcao_testes/WISC_IV/)
-  // então "data/..." resolve para /Correcao_testes/WISC_IV/data/...
-  const url = "data/normas-wisciv.json";
-  const resp = await fetch(url, { cache:"no-store" });
-
-  if(!resp.ok) throw new Error(`Falha ao carregar: ${url} (HTTP ${resp.status})`);
-
-  const json = await resp.json();
-  if (!json || typeof json !== "object" || Object.keys(json).length === 0) {
-    throw new Error("Normas carregadas, mas o JSON veio vazio ou inválido.");
-  }
-
-  NORMAS = json;
+  const resp = await fetch("data/normas-wisciv.json", { cache:"no-store" });
+  if(!resp.ok) throw new Error("Não foi possível carregar data/normas-wisciv.json");
+  NORMAS = await resp.json();
   return NORMAS;
 }
 
@@ -251,272 +240,6 @@ function setLaudos(arr){
   localStorage.setItem(LAUDOS_KEY, JSON.stringify(arr));
 }
 
-// ----------------------
-// RELATÓRIO / GRÁFICOS
-// ----------------------
-
-let chartPerfil = null;
-
-// ordem do perfil (igual ao modelo com grupos + suplementares entre parênteses)
-const PERFIL_ORDEM = ["SM","VC","CO","IN","RP","CB","CN","RM","CF","DG","SNL","AR","CD","PS","CA"];
-
-function montarRelatorio(data){
-  const rel = document.getElementById("relatorio");
-  if(!rel) return;
-
-  const { nome, nasc, apl, idade, faixa, resultados, indicesInfo, qiInfo } = data;
-  const matriz = renderMatrizConversao({ resultados, indicesInfo, qiInfo });
-
-  // Cabeçalho do perfil (códigos + valores)
-  const headerPerfil = PERFIL_ORDEM.map(c=>{
-    const val = resultados?.[c]?.ponderado ?? "—";
-    const sup = ["IN","RP","CF","AR","CA"].includes(c);
-    return `<div class="perfil-cell">
-      <div class="perfil-code">${sup ? `(${c})` : c}</div>
-      <div class="perfil-val">${val}</div>
-    </div>`;
-  }).join("");
-
-  rel.style.display = "block";
-  rel.innerHTML = `
-    <div class="report-wrap">
-      <div class="report-header">
-        <div class="report-brand">
-          <img class="report-logo" src="logo2.png" alt="Logo" onerror="this.style.display='none'">
-          <div>
-            <div class="report-title">Relatório – WISC-IV</div>
-            <div class="report-subtitle">Conversão PB → Ponderado e somatórios por índice</div>
-          </div>
-        </div>
-        <div class="report-meta">
-          <div><b>Faixa:</b> ${faixa}</div>
-          <div><b>Idade:</b> ${idade.anos}a ${idade.meses}m</div>
-        </div>
-      </div>
-
-      <div class="report-card">
-        <div><b>Nome:</b> ${nome}</div>
-        <div><b>Nascimento:</b> ${nasc}</div>
-        <div><b>Aplicação:</b> ${apl}</div>
-      </div>
-
-      <div class="report-card">
-        <h3 class="report-h3">Perfil dos Pontos Ponderados dos Subtestes</h3>
-
-        <div class="perfil-groups">
-          <div class="g g1">Compreensão<br>Verbal</div>
-          <div class="g g2">Organização<br>Perceptual</div>
-          <div class="g g3">Memória<br>Operacional</div>
-          <div class="g g4">Velocidade de<br>Proc.</div>
-        </div>
-
-        <div class="perfil-head">
-          ${headerPerfil}
-        </div>
-
-        <div class="perfil-chart">
-          <canvas id="grafPerfil" height="260"></canvas>
-        </div>
-
-        <div class="muted" style="margin-top:10px;">
-          A faixa azul indica a região média aproximada (9–11) dos pontos ponderados.
-        </div>
-      </div>
-
-      <div class="report-card page-break">
-        <h3 class="report-h3">Conversão PB → Ponderado e contribuição nos Índices</h3>
-        <div class="matrix-card">${matriz}</div>
-
-        <div class="muted" style="margin-top:10px;">
-          Células azuis indicam subtestes usados na soma do índice/QIT. Suplementares podem aparecer entre parênteses.
-        </div>
-      </div>
-
-      <div class="report-card page-break">
-        <h3 class="report-h3">Subtestes (detalhamento)</h3>
-        <table class="table report-table">
-          <thead>
-            <tr>
-              <th>Subteste</th>
-              <th>PB</th>
-              <th>Ponderado</th>
-              <th>Classificação</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${["CB","SM","DG","CN","CD","VC","SNL","RM","CO","PS","CF","CA","IN","AR","RP"].map(c=>{
-              const r = resultados?.[c];
-              if(!r) return "";
-              return `
-                <tr>
-                  <td><b>${r.nome}</b> <span class="muted">(${r.codigo})</span></td>
-                  <td>${r.bruto}</td>
-                  <td>${r.ponderado}</td>
-                  <td>${r.classificacao}</td>
-                </tr>
-              `;
-            }).join("")}
-          </tbody>
-        </table>
-      </div>
-
-      <div class="report-card">
-        <h3 class="report-h3">Somatórios (pontos ponderados)</h3>
-        <table class="table report-table">
-          <thead>
-            <tr>
-              <th>Medida</th>
-              <th>Soma</th>
-              <th>Subtestes usados</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${Object.entries(INDICES).map(([k])=>{
-              const info = indicesInfo[k];
-              return `
-                <tr>
-                  <td><b>${k}</b></td>
-                  <td>${info.soma ?? "—"}</td>
-                  <td>${(info.usados||[]).join(", ") || "—"}</td>
-                </tr>
-              `;
-            }).join("")}
-            <tr>
-              <td><b>QIT</b></td>
-              <td>${qiInfo.soma ?? "—"}</td>
-              <td>${(qiInfo.usados||[]).join(", ") || "—"}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="report-footer">
-        <img class="report-logo-footer" src="logo2.png" alt="Logo" onerror="this.style.display='none'">
-      </div>
-    </div>
-  `;
-
-  desenharGraficoPerfil(resultados);
-}
-
-function desenharGraficoPerfil(resultados){
-  const canvas = document.getElementById("grafPerfil");
-  if(!canvas) return;
-
-  if(chartPerfil) chartPerfil.destroy();
-
-  // pontos (x = posição), com null para ausentes
-  const dataPts = PERFIL_ORDEM.map((code, i) => {
-    const v = resultados?.[code]?.ponderado;
-    if(v == null) return { x: i+1, y: null };
-    return { x: i+1, y: Number(v) };
-  });
-
-  // plugin: faixa 9-11 + separadores de grupos
-  const pluginPerfil = {
-    id: "perfilDecor",
-    beforeDatasetsDraw(chart){
-      const { ctx, chartArea, scales } = chart;
-      if(!chartArea) return;
-
-      const y = scales.y;
-      const x = scales.x;
-
-      // faixa média 9–11
-      const yTop = y.getPixelForValue(11);
-      const yBot = y.getPixelForValue(9);
-
-      ctx.save();
-      ctx.fillStyle = "rgba(13,71,161,0.12)";
-      ctx.fillRect(chartArea.left, yTop, chartArea.right - chartArea.left, yBot - yTop);
-      ctx.restore();
-
-      // separadores (após RP, após CF, após AR)
-      const cuts = [
-        { after: 5, label:"" },  // SM VC CO IN RP (5)
-        { after: 9, label:"" },  // CB CN RM CF (4) -> total 9
-        { after: 12, label:"" }, // DG SNL AR (3) -> total 12
-      ];
-
-      ctx.save();
-      ctx.strokeStyle = "rgba(0,0,0,0.18)";
-      ctx.lineWidth = 1;
-
-      cuts.forEach(c=>{
-        const px = x.getPixelForValue(c.after + 0.5);
-        ctx.beginPath();
-        ctx.moveTo(px, chartArea.top);
-        ctx.lineTo(px, chartArea.bottom);
-        ctx.stroke();
-      });
-
-      ctx.restore();
-    }
-  };
-
-  chartPerfil = new Chart(canvas, {
-    type: "line",
-    data: {
-      datasets: [{
-        data: dataPts,
-        showLine: false,
-        pointRadius: 5,
-        pointHoverRadius: 6,
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display:false },
-        tooltip: {
-          callbacks: {
-            label: (ctx)=>{
-              const idx = ctx.dataIndex;
-              const code = PERFIL_ORDEM[idx];
-              const nome = obterNomeSubteste(code);
-              const val = ctx.parsed.y;
-              return `${code} (${nome}): ${val}`;
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          type: "linear",
-          min: 0.5,
-          max: PERFIL_ORDEM.length + 0.5,
-          ticks: { display:false },
-          grid: { display:false }
-        },
-        y: {
-          min: 1,
-          max: 19,
-          ticks: { stepSize: 1 },
-          grid: { color: "rgba(0,0,0,0.10)" }
-        }
-      }
-    },
-    plugins: [pluginPerfil]
-  });
-
-  chartPerfil.update();
-}
-
-function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
-
-async function esperarGraficos(){
-  // tempo curto para garantir que o canvas foi desenhado antes do html2pdf capturar
-  await sleep(250);
-  if(chartPerfil) chartPerfil.update();
-  await sleep(100);
-}
-
-// ----------------------
-// CÁLCULO (sem mexer na lógica)
-// apenas garante relatório + PDF completos
-// ----------------------
 async function calcular(salvar){
   try{
     const normas = await carregarNormas();
@@ -565,20 +288,15 @@ async function calcular(salvar){
 
     const qiInfo = somarQI(pondByCode);
 
-    // monta relatório (corrigido)
     montarRelatorio({ nome, nasc, apl, idade, faixa, resultados, indicesInfo, qiInfo });
 
     if(salvar){
-      // garante que o gráfico foi desenhado antes do PDF
-      await esperarGraficos();
-
       const rel = document.getElementById("relatorio");
       await html2pdf().set({
         margin: 10,
         filename: `WISC-IV_${nome}.pdf`,
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { format: "a4" },
-        pagebreak: { mode: ["css", "legacy"] }
+        html2canvas: { scale: 2 },
+        jsPDF: { format: "a4" }
       }).from(rel).save();
 
       const laudos = getLaudos();
@@ -596,7 +314,316 @@ async function calcular(salvar){
 
   }catch(e){
     console.error(e);
-    alert("Erro ao calcular. Verifique normas-wisciv.json em /Correcao_testes/WISC_IV/data/.");
+    alert("Erro ao calcular. Verifique normas-wisciv.json em /tests/wisciv/data/.");
+  }
+}
+
+// ================= RELATÓRIO + GRÁFICOS + PDF =================
+let chartSub = null;
+let chartIdx = null;
+
+// Desenha banda da média (9–11) e divisórias de grupos no gráfico de subtestes
+const WISC_SCATTER_PLUGIN = {
+  id: "wiscScatterDecor",
+  beforeDraw(chart, args, opts) {
+    const { ctx, chartArea, scales } = chart;
+    if (!chartArea) return;
+
+    // Banda média (9–11)
+    if (opts && opts.band && scales?.y) {
+      const yTop = scales.y.getPixelForValue(opts.band.max);
+      const yBot = scales.y.getPixelForValue(opts.band.min);
+      ctx.save();
+      ctx.fillStyle = "rgba(13, 71, 161, 0.12)"; // azul translúcido
+      ctx.fillRect(chartArea.left, yTop, chartArea.right - chartArea.left, yBot - yTop);
+      ctx.restore();
+    }
+
+    // Divisórias verticais (grupos)
+    if (opts && Array.isArray(opts.vlines) && scales?.x) {
+      ctx.save();
+      ctx.strokeStyle = "rgba(13, 71, 161, 0.35)";
+      ctx.lineWidth = 2;
+      opts.vlines.forEach(v => {
+        const x = scales.x.getPixelForValue(v);
+        ctx.beginPath();
+        ctx.moveTo(x, chartArea.top);
+        ctx.lineTo(x, chartArea.bottom);
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    // Títulos dos grupos (acima do chartArea)
+    if (opts && Array.isArray(opts.groupLabels) && scales?.x) {
+      ctx.save();
+      ctx.fillStyle = "rgba(13, 71, 161, 0.95)";
+      ctx.font = "600 12px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      ctx.textAlign = "center";
+      const y = chartArea.top - 10;
+      opts.groupLabels.forEach(g => {
+        const x1 = scales.x.getPixelForValue(g.from);
+        const x2 = scales.x.getPixelForValue(g.to);
+        const xc = (x1 + x2) / 2;
+        ctx.fillText(g.text, xc, y);
+      });
+      ctx.restore();
+    }
+  }
+};
+
+function registrarPluginsChart(){
+  if (typeof Chart === "undefined") return;
+  // evita registrar duas vezes
+  const already = Chart.registry?.plugins?.get?.("wiscScatterDecor");
+  if (!already) Chart.register(WISC_SCATTER_PLUGIN);
+}
+
+function formatarDataISO(iso){
+  if(!iso) return "";
+  // mantém ISO para consistência no seu sistema, mas permite trocar depois
+  return iso;
+}
+
+function renderPerfilSubtestes(resultados){
+  const grupos = [
+    { titulo: "Compreensão Verbal", codes: ["SM","VC","CO","IN","RP"] },
+    { titulo: "Organização Perceptual", codes: ["CB","CN","RM","CF"] },
+    { titulo: "Memória Operacional", codes: ["DG","SNL","AR"] },
+    { titulo: "Velocidade de Proc.", codes: ["CD","PS","CA"] },
+  ];
+  const supl = new Set(["CF","CA","IN","AR","RP"]);
+
+  const head1 = grupos.map(g => `<th colspan="${g.codes.length}" class="perfil-group">${g.titulo}</th>`).join("");
+  const codes = grupos.flatMap(g => g.codes).map(c=>{
+    const label = supl.has(c) ? `(${c})` : c;
+    return `<th class="perfil-code">${label}</th>`;
+  }).join("");
+  const vals = grupos.flatMap(g => g.codes).map(c=>{
+    const v = resultados?.[c]?.ponderado;
+    return `<td class="perfil-val">${v ?? "—"}</td>`;
+  }).join("");
+
+  return `
+    <table class="perfil-table">
+      <thead>
+        <tr>${head1}</tr>
+        <tr>${codes}</tr>
+      </thead>
+      <tbody>
+        <tr>${vals}</tr>
+      </tbody>
+    </table>
+  `;
+}
+
+function montarRelatorio(data) {
+  const rel = document.getElementById("relatorio");
+  if (!rel) return;
+
+  registrarPluginsChart();
+
+  const { nome, nasc, apl, idade, faixa, resultados, indicesInfo, qiInfo } = data;
+  const matriz = renderMatrizConversao({ resultados, indicesInfo, qiInfo });
+  const perfil = renderPerfilSubtestes(resultados);
+
+  rel.style.display = "block";
+  rel.innerHTML = `
+    <div class="report">
+      <div class="report-header">
+        <img class="report-logo report-logo-top" src="logo2.png" alt="Logo" onerror="this.style.display='none'">
+        <div class="report-title">
+          <div class="t1">Relatório – WISC-IV</div>
+          <div class="t2">Conversão PB → Ponderado e somatórios por índice</div>
+        </div>
+        <div class="report-meta">
+          <div class="badge">Faixa: ${faixa}</div>
+          <div class="muted">Idade: ${idade.anos}a ${idade.meses}m</div>
+        </div>
+      </div>
+
+      <div class="section report-info no-break">
+        <div class="info-grid">
+          <div><span class="k">Nome:</span> <span class="v">${nome}</span></div>
+          <div><span class="k">Nascimento:</span> <span class="v">${formatarDataISO(nasc)}</span></div>
+          <div><span class="k">Aplicação:</span> <span class="v">${formatarDataISO(apl)}</span></div>
+        </div>
+      </div>
+
+      <div class="section no-break">
+        <h3>Perfil dos Pontos Ponderados dos Subtestes</h3>
+        <div class="perfil-card">
+          ${perfil}
+          <div class="canvas-wrap perfil-canvas"><canvas id="grafSub" height="220"></canvas></div>
+        </div>
+        <p class="muted" style="margin:10px 0 0;">
+          A faixa azul indica a região média aproximada (9–11) dos pontos ponderados.
+        </p>
+      </div>
+
+      <div class="section">
+        <h3>Conversão PB → Ponderado e contribuição nos Índices</h3>
+        <div class="matrix-card no-break">${matriz}</div>
+        <p class="muted" style="margin:10px 0 0;">
+          Células azuis indicam subtestes usados na soma do índice/QIT. Suplementares podem aparecer entre parênteses.
+        </p>
+      </div>
+
+      <div class="section">
+        <h3>Subtestes (detalhamento)</h3>
+        <table class="table">
+          <thead><tr><th>Subteste</th><th>PB</th><th>Ponderado</th><th>Classificação</th></tr></thead>
+          <tbody>
+            ${Object.values(resultados).map(r=>`
+              <tr>
+                <td><b>${r.nome}</b> <span class="muted">(${r.codigo})</span></td>
+                <td>${r.bruto}</td>
+                <td>${r.ponderado}</td>
+                <td>${r.classificacao}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <h3>Índices e QIT (somatórios)</h3>
+        <div class="canvas-wrap"><canvas id="grafIdx" height="180"></canvas></div>
+
+        <table class="table" style="margin-top:12px;">
+          <thead><tr><th>Medida</th><th>Soma (ponderados)</th><th>Subtestes usados</th></tr></thead>
+          <tbody>
+            ${Object.entries(INDICES).map(([k, def])=>{
+              const info = indicesInfo[k];
+              return `
+                <tr>
+                  <td><b>${k}</b></td>
+                  <td>${info.soma ?? "—"}</td>
+                  <td>${(info.usados||[]).join(", ") || "—"}</td>
+                </tr>
+              `;
+            }).join("")}
+            <tr>
+              <td><b>QIT</b></td>
+              <td>${qiInfo.soma ?? "—"}</td>
+              <td>${(qiInfo.usados||[]).join(", ") || "—"}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="report-footer">
+        <div class="muted">Documento gerado automaticamente</div>
+        <img class="report-logo report-logo-bottom" src="logo2.png" alt="Logo" onerror="this.style.display='none'">
+      </div>
+    </div>
+  `;
+
+  desenharGraficos(resultados, indicesInfo, qiInfo);
+}
+
+function desenharGraficos(resultados, indicesInfo, qiInfo){
+  registrarPluginsChart();
+
+  // ---------- Subtestes: SCATTER (pontos) ----------
+  const ctxSub = document.getElementById("grafSub");
+  if(ctxSub){
+    if(chartSub) chartSub.destroy();
+
+    // ordem do perfil (igual ao manual)
+    const labels = ["SM","VC","CO","IN","RP","CB","CN","RM","CF","DG","SNL","AR","CD","PS","CA"];
+    const points = labels
+      .map((c, i) => {
+        const v = resultados?.[c]?.ponderado;
+        return (v == null) ? null : { x: i+1, y: Number(v) };
+      })
+      .filter(Boolean);
+
+    chartSub = new Chart(ctxSub, {
+      type:"scatter",
+      data:{
+        datasets:[{
+          data: points,
+          pointRadius: 5,
+          pointHoverRadius: 6,
+        }]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{
+          legend:{ display:false },
+          wiscScatterDecor:{
+            band:{ min:9, max:11 },
+            vlines:[6, 10, 13],
+            groupLabels:[
+              { from:1, to:5, text:"Compreensão Verbal" },
+              { from:6, to:9, text:"Organização Perceptual" },
+              { from:10, to:12, text:"Memória Operacional" },
+              { from:13, to:15, text:"Velocidade de Proc." },
+            ]
+          }
+        },
+        scales:{
+          x:{
+            min:0.5, max:15.5,
+            grid:{ display:false },
+            ticks:{
+              autoSkip:false,
+              callback:(val)=> {
+                const idx = Math.round(val)-1;
+                const c = labels[idx];
+                if(!c) return "";
+                return ["CF","CA","IN","AR","RP"].includes(c) ? `(${c})` : c;
+              }
+            }
+          },
+          y:{
+            min:1, max:19,
+            ticks:{ stepSize:1 },
+          }
+        }
+      }
+    });
+  }
+
+  // ---------- Índices e QIT: pontos ----------
+  const ctxIdx = document.getElementById("grafIdx");
+  if(ctxIdx){
+    if(chartIdx) chartIdx.destroy();
+    const labels = ["ICV","IOP","IMO","IVP","QIT"];
+    const vals = [
+      indicesInfo?.ICV?.soma ?? null,
+      indicesInfo?.IOP?.soma ?? null,
+      indicesInfo?.IMO?.soma ?? null,
+      indicesInfo?.IVP?.soma ?? null,
+      qiInfo?.soma ?? null,
+    ];
+    const pts = vals.map((v,i)=> v==null ? null : ({x:i+1, y:Number(v)})).filter(Boolean);
+
+    chartIdx = new Chart(ctxIdx, {
+      type:"scatter",
+      data:{ datasets:[{ data: pts, pointRadius:5, pointHoverRadius:6 }] },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{ legend:{ display:false } },
+        scales:{
+          x:{
+            min:0.5, max:5.5,
+            grid:{ display:false },
+            ticks:{
+              autoSkip:false,
+              callback:(val)=>{
+                const idx=Math.round(val)-1;
+                return labels[idx] || "";
+              }
+            }
+          },
+          y:{ beginAtZero:true }
+        }
+      }
+    });
   }
 }
 
@@ -639,9 +666,8 @@ function baixarPDFSalvo(index){
   html2pdf().set({
     margin: 10,
     filename: `WISC-IV_${item.nome}.pdf`,
-    html2canvas: { scale: 2, useCORS:true },
-    jsPDF: { format: "a4" },
-    pagebreak: { mode: ["css", "legacy"] }
+    html2canvas: { scale: 2 },
+    jsPDF: { format: "a4" }
   }).from(temp).save().then(()=>temp.remove());
 }
 
