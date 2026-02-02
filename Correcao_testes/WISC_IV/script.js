@@ -577,7 +577,9 @@ function montarRelatorio(data) {
       <div class="report-grid-2">
         <div class="section report-item no-break">
           <h3>Conversão PB → Ponderado e contribuição nos Índices</h3>
-          <div class="matrix-card no-break">${matriz}</div>
+          <div class="matrix-card" style="width:680px;margin:0 auto;">
+              ${matriz}
+          </div>
           <p class="muted" style="margin:10px 0 0;">
             Células azuis indicam subtestes usados na soma do índice/QIT. Suplementares podem aparecer entre parênteses.
           </p>
