@@ -250,14 +250,14 @@ button{
 /* ================= RELATÓRIO (PDF / HTML) ================= */
 
 .report{ 
-  margin-top: 18px;
+  margin-top: 0;
   background:#fff;
   border-radius: 18px;
   overflow: hidden;
   border: 1px solid rgba(13,71,161,.14);
 }
 
-/* A4 friendly: deixa o relatório com largura confortável para PDF */
+/* A4 friendly */
 #relatorio .report{
   max-width: 190mm;
   margin-left: auto;
@@ -269,7 +269,7 @@ button{
   align-items:center;
   justify-content:space-between;
   gap:14px;
-  padding: 14px 16px;
+  padding: 12px 14px;
   border-bottom: 2px solid rgba(13,71,161,.14);
   background: linear-gradient(180deg, rgba(227,242,253,.9), rgba(227,242,253,.55));
 }
@@ -330,15 +330,15 @@ button{
 
 /* Seções do relatório */
 .report .section{
-  margin: 12px 12px 0;
-  padding: 12px 12px;
+  margin: 10px 10px 0;
+  padding: 10px 10px;
   border-radius: 16px;
   background: rgba(227,242,253,.65);
   border: 1px solid rgba(13,71,161,.10);
 }
 
 .report .section:last-of-type{
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .report-info{
@@ -354,8 +354,22 @@ button{
 .info-grid .v{ color: #111; font-weight: 600; font-size: 11px; }
 
 .hint{
-  margin: 8px 0 0;
-  font-size: 11px;
+  margin: 7px 0 0;
+  font-size: 10.8px;
+}
+
+/* ======= Layout 2 colunas dentro do relatório ======= */
+.two-col{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 0 10px 10px;
+}
+
+/* Blocos que NÃO podem quebrar no PDF */
+.report-block{
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 /* Containers */
@@ -363,17 +377,19 @@ button{
   background: #fff;
   border: 1px solid rgba(13,71,161,.16);
   border-radius: 16px;
-  padding: 10px;
+  padding: 8px;
 }
-.perfil-canvas{ height: 240px; }
-.idx-canvas{ height: 170px; }
+
+/* Gráficos mais compactos (como você pediu) */
+.perfil-canvas{ height: 200px; }
+.idx-canvas{ height: 150px; }
 
 .matrix-card{
   background: #fff;
   border: 1px solid rgba(13,71,161,.16);
   border-radius: 16px;
-  padding: 10px;
-  box-shadow: none; /* evita “peso” no PDF */
+  padding: 8px;
+  box-shadow: none;
   overflow: visible;
 }
 
@@ -381,7 +397,7 @@ button{
 .perfil-card{
   border: 1px solid rgba(13,71,161,.16);
   border-radius: 16px;
-  padding: 10px;
+  padding: 8px;
   background: rgba(255,255,255,.65);
 }
 
@@ -483,12 +499,23 @@ button{
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  padding: 10px 16px 12px;
+  padding: 10px 14px 12px;
   border-top: 2px solid rgba(13,71,161,.14);
   background: #fff;
 }
 
-.no-break{ break-inside:avoid; page-break-inside:avoid; }
+/* Evitar quebras no meio de gráficos/tabelas */
+.no-break{
+  break-inside:avoid;
+  page-break-inside:avoid;
+}
+
+/* Responsivo: no celular vira 1 coluna */
+@media (max-width: 900px){
+  .two-col{
+    grid-template-columns: 1fr;
+  }
+}
 
 /* Melhor comportamento de impressão/PDF */
 @media print{
@@ -497,4 +524,14 @@ button{
   .main{ margin: 0 !important; padding: 0 !important; }
   .card{ box-shadow:none !important; border:none !important; margin: 0 !important; padding: 0 !important; }
   #relatorio .report{ max-width: none !important; border:none !important; }
+
+  .two-col{
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  canvas, .canvas-wrap, .matrix-card, .report-block, .section{
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
 }
