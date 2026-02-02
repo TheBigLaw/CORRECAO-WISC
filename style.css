@@ -395,52 +395,27 @@ button{
 
 }
 
+/* ===== Ajuste correto: SECTION do relatório em formato retrato ===== */
 
-/* =========================================
-   CHECKLIST 1 — Cards em formato RETRATO
-   (apenas tamanho de cada item, sem mudar estrutura)
-   Baseado no modelo oficial do WISC-IV
-   ========================================= */
-
+/* cada item do relatório vira um "card" estreito */
 .report .section{
-  max-width: 420px;       /* item mais estreito */
-  margin: 0 auto 18px;    /* centraliza + espaço vertical */
+  max-width: 420px;          /* largura real do item */
+  width: 100%;
+  margin: 0 auto 20px;       /* centraliza e separa verticalmente */
 }
 
-.report .canvas-wrap{
-  max-width: 380px;       /* gráfico mais estreito */
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.report .perfil-canvas{
-  height: 560px;          /* mais alto para acomodar canvas 520 */
-}
-
-.report table.table{
-  max-width: 420px;       /* tabelas não esticam */
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.report .matrix-card{
-  max-width: 420px;       /* matriz no mesmo padrão */
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* ===== Ajuste 1: itens do RELATÓRIO mais estreitos (sem afetar o site) ===== */
+/* agora o conteúdo pode ocupar 100% da section */
 .report .canvas-wrap,
 .report .matrix-card,
 .report table.table,
 .report table.wisc-matrix,
 .report table.perfil-table{
-  max-width: 420px;   /* deixe 400~460 se quiser ajustar */
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
 }
 
-/* o canvas acompanha a largura do card */
+/* canvas ocupa toda a largura do card */
 .report .canvas-wrap canvas{
   width: 100% !important;
 }
