@@ -428,3 +428,19 @@ button{
   margin-left: auto;
   margin-right: auto;
 }
+
+/* ===== Ajuste 1: itens do RELATÓRIO mais estreitos (sem afetar o site) ===== */
+.report .canvas-wrap,
+.report .matrix-card,
+.report table.table,
+.report table.wisc-matrix,
+.report table.perfil-table{
+  max-width: 420px;   /* deixe 400~460 se quiser ajustar */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* o canvas acompanha a largura do card */
+.report .canvas-wrap canvas{
+  width: 100% !important;
+}
