@@ -330,6 +330,68 @@ const laudos = getLaudos();
   }
 }
 
+// =====================================================
+// CHECKLIST 1 — opção 1
+// Reorganiza visualmente o relatório SEM alterar HTML
+// =====================================================
+function aplicarLayoutChecklist1(rel){
+  if(!rel) return;
+
+  const secPerfil  = rel.querySelector("#grafSub")?.closest(".section");
+  const secIndices = rel.querySelector("#grafIdx")?.closest(".section");
+  const secMatriz  = rel.querySelector(".matrix-card")?.closest(".section");
+
+  // tenta achar a section de Subtestes pelo título
+  let secSub = Array.from(rel.querySelectorAll(".section")).find(s=>{
+    const h = s.querySelector("h3");
+    return h && /Subtestes/i.test(h.textContent || "");
+  });
+
+  // fallback: qualquer section com tabela que não seja índices ou matriz
+  if(!secSub){
+    const secsComTabela = Array.from(rel.querySelectorAll(".section")).filter(s => s.querySelector("table"));
+    secSub = secsComTabela.find(s => s !== secIndices && s !== secMatriz) || null;
+  }
+
+  if(!secPerfil || !secIndices || !secMatriz || !secSub) return;
+
+  // deixa o relatório mais estreito (inline, sem mexer no CSS global)
+  const reportRoot = rel.querySelector(".report") || rel;
+  reportRoot.style.maxWidth = "900px";
+  reportRoot.style.margin = "0 auto";
+
+  // cria grids (se ainda não existirem)
+  let gridTop = rel.querySelector(".report-grid-2.top");
+  let gridBottom = rel.querySelector(".report-grid-2.bottom");
+
+  if(!gridTop){
+    gridTop = document.createElement("div");
+    gridTop.className = "report-grid-2 top";
+    secPerfil.parentNode.insertBefore(gridTop, secPerfil);
+  }
+
+  if(!gridBottom){
+    gridBottom = document.createElement("div");
+    gridBottom.className = "report-grid-2 bottom";
+    secMatriz.parentNode.insertBefore(gridBottom, secMatriz);
+  }
+
+  // move os blocos
+  gridTop.appendChild(secPerfil);
+  gridTop.appendChild(secIndices);
+
+  gridBottom.appendChild(secMatriz);
+  gridBottom.appendChild(secSub);
+
+  // reduz altura dos gráficos sem perder legibilidade
+  const cSub = rel.querySelector("#grafSub");
+  if(cSub) cSub.setAttribute("height", "160");
+
+  const cIdx = rel.querySelector("#grafIdx");
+  if(cIdx) cIdx.setAttribute("height", "140");
+}
+
+
 // ================= RELATÓRIO + GRÁFICOS + PDF =================
 let chartSub = null;
 let chartIdx = null;
