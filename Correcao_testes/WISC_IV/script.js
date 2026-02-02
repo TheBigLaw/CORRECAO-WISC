@@ -292,14 +292,26 @@ async function calcular(salvar){
 
     if(salvar){
       const rel = document.getElementById("relatorio");
-      await html2pdf().set({
-        margin: 10,
-        filename: `WISC-IV_${nome}.pdf`,
-        html2canvas: { scale: 2 },
-        jsPDF: { format: "a4" }
-      }).from(rel).save();
+      // garante logo/imagens antes do canvas (especialmente no iOS)
+await esperarImagensCarregarem(rel);
+// pequeno delay para assegurar renderização dos gráficos/canvas
+await new Promise(r => setTimeout(r, 150));
 
-      const laudos = getLaudos();
+await html2pdf().set({
+  margin: [8, 8, 8, 8],
+  filename: `WISC-IV_${nome}.pdf`,
+  pagebreak: { mode: ["css", "legacy"], avoid: ".no-break" },
+  html2canvas: {
+    scale: 2,
+    useCORS: true,
+    allowTaint: false,
+    backgroundColor: "#ffffff",
+    imageTimeout: 15000
+  },
+  jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+}).from(rel).save();
+
+const laudos = getLaudos();
       laudos.unshift({
         nome,
         dataAplicacao: apl,
@@ -654,7 +666,23 @@ function renderListaLaudos(){
   `;
 }
 
-function baixarPDFSalvo(index){
+
+
+// =========================
+// PDF (html2pdf) — helpers
+// =========================
+async function esperarImagensCarregarem(container){
+  const imgs = Array.from(container.querySelectorAll("img"));
+  await Promise.all(imgs.map(img => {
+    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+    return new Promise(resolve => {
+      img.onload = () => resolve();
+      img.onerror = () => resolve(); // não trava o PDF
+    });
+  }));
+}
+
+async function baixarPDFSalvo(index){
   const laudos = getLaudos();
   const item = laudos[index];
   if(!item) return alert("Laudo não encontrado.");
@@ -663,12 +691,27 @@ function baixarPDFSalvo(index){
   temp.innerHTML = item.htmlRelatorio;
   document.body.appendChild(temp);
 
-  html2pdf().set({
-    margin: 10,
-    filename: `WISC-IV_${item.nome}.pdf`,
-    html2canvas: { scale: 2 },
-    jsPDF: { format: "a4" }
-  }).from(temp).save().then(()=>temp.remove());
+  // garante logo/imagens antes do canvas (especialmente no iOS)
+await esperarImagensCarregarem(temp);
+// pequeno delay para assegurar renderização dos gráficos/canvas
+await new Promise(r => setTimeout(r, 150));
+
+await html2pdf().set({
+  margin: [8, 8, 8, 8],
+  filename: `WISC-IV_${item.nome}.pdf`,
+  pagebreak: { mode: ["css", "legacy"], avoid: ".no-break" },
+  html2canvas: {
+    scale: 2,
+    useCORS: true,
+    allowTaint: false,
+    backgroundColor: "#ffffff",
+    imageTimeout: 15000
+  },
+  jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+}).from(temp).save();
+
+temp.remove();
+
 }
 
 (function init(){
