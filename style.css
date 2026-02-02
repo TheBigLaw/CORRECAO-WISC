@@ -1,4 +1,268 @@
-/* (SEU CSS ATUAL AQUI - mantido) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root{
+  --bg:#e9f2ff;
+  --card:#ffffff;
+  --blue:#1e88e5;
+  --blueDark:#0d47a1;
+  --text:#16202b;
+  --muted:#5c6b7a;
+  --border:#d7e0ea;
+  --shadow: 0 14px 34px rgba(0,0,0,.10);
+  --radius: 18px;
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight: 300;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* Header */
+.app-header{
+  position: fixed;
+  top:0; left:0; right:0;
+  height: 104px;
+  background: var(--blueDark);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index: 999;
+  box-shadow: 0 10px 22px rgba(0,0,0,.22);
+}
+
+.app-header .logo-wrap{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width: 100%;
+  pointer-events:none;
+}
+
+.app-header .logo{
+  height: 56px;
+  object-fit: contain;
+  display:block;
+}
+
+.back-btn{
+  position:absolute;
+  left: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.12);
+  color:#fff;
+  border-radius: 12px;
+  cursor:pointer;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.back-btn:hover{ background: rgba(255,255,255,.18); }
+
+.exit-btn{
+  position:absolute;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.12);
+  color:#fff;
+  border-radius: 12px;
+  cursor:pointer;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.exit-btn:hover{ background: rgba(255,255,255,.18); }
+
+/* Layout */
+.main{
+  max-width: 980px;
+  margin: 132px auto 64px;
+  padding: 0 18px;
+}
+
+.card{
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 26px;
+  margin: 18px auto;
+}
+
+/* espaçamento padrão dentro de cards */
+.card > * + *{
+  margin-top: 12px;
+}
+
+h1,h2,h3{
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+h1{ font-size: 20px; color: var(--blueDark); }
+h2{ font-size: 16px; color: var(--blueDark); }
+h3{ font-size: 14px; color: var(--blueDark); }
+
+.muted{
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  align-items: end;
+}
+
+label{
+  display:block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blueDark);
+  margin-bottom: 6px;
+}
+
+input, select{
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 300;
+  background: #fff;
+  outline: none;
+}
+input:focus, select:focus{
+  border-color: rgba(30,136,229,.55);
+  box-shadow: 0 0 0 4px rgba(30,136,229,.10);
+}
+
+.table{
+  width:100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 8px;
+}
+.table th, .table td{
+  border-bottom: 1px solid var(--border);
+  padding: 10px 10px;
+  text-align:left;
+}
+.table th{
+  color: var(--blueDark);
+  font-weight: 700;
+  background: rgba(30,136,229,.06);
+}
+
+.actions{
+  display:flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+button{
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: none;
+  cursor:pointer;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.btn-primary{
+  background: var(--blue);
+  color:#fff;
+}
+.btn-primary:hover{ filter: brightness(.95); }
+
+.btn-outline{
+  background: transparent;
+  border: 1px solid rgba(13,71,161,.25);
+  color: var(--blueDark);
+}
+.btn-outline:hover{ background: rgba(13,71,161,.06); }
+
+/* Login */
+.login-page{
+  background: linear-gradient(140deg, var(--blueDark), #1565c0);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 18px;
+}
+
+.login-card{
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 26px 60px rgba(0,0,0,.30);
+  padding: 34px 28px;
+}
+
+.login-card .logo{
+  height: 74px;
+  margin: 0 auto 16px;
+  display:block;
+}
+
+.login-card .muted{
+  text-align:center;
+  margin: 0 0 14px;
+}
+
+.login-form{
+  display:flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-form .btn-primary{
+  width: 100%;
+  margin-top: 6px;
+}
+
+.error{
+  color: #c62828;
+  font-size: 13px;
+  margin-top: 10px;
+  min-height: 18px;
+  text-align:center;
+}
+
+/* Report / matriz (mantém o estilo que já tínhamos) */
+.report{ margin-top: 18px; }
+.report .section{
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(227,242,253,.75);
+}
+.canvas-wrap{
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+}
+.matrix-card{
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+  
+
 
 /* ================= RELATÓRIO (PDF) ================= */
 .report{ background:#fff; border-radius:18px; }
