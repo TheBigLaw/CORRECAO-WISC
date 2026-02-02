@@ -265,4 +265,236 @@ button{
 }
 
 .report-header{
-  display:f
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding: 14px 16px;
+  border-bottom: 2px solid rgba(13,71,161,.14);
+  background: linear-gradient(180deg, rgba(227,242,253,.9), rgba(227,242,253,.55));
+}
+
+.report-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width: 0;
+}
+
+.report-title{ 
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width: 0;
+}
+
+.report-title .t1{ 
+  font-weight: 800;
+  color: var(--blueDark);
+  font-size: 14px;
+  letter-spacing: .1px;
+  line-height: 1.1;
+}
+.report-title .t2{ 
+  color: rgba(0,0,0,.55);
+  font-size: 10.5px;
+  line-height: 1.2;
+}
+
+.report-meta{ 
+  text-align:right;
+  min-width: 160px;
+}
+
+.badge{
+  display:inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(30,136,229,.14);
+  color: var(--blueDark);
+  font-weight: 800;
+  font-size: 11px;
+  border: 1px solid rgba(13,71,161,.16);
+}
+
+.report-logo{
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.report-logo-bottom{
+  width: 30px;
+  height: 30px;
+}
+
+/* Seções do relatório */
+.report .section{
+  margin: 12px 12px 0;
+  padding: 12px 12px;
+  border-radius: 16px;
+  background: rgba(227,242,253,.65);
+  border: 1px solid rgba(13,71,161,.10);
+}
+
+.report .section:last-of-type{
+  margin-bottom: 12px;
+}
+
+.report-info{
+  background: rgba(227,242,253,.45);
+}
+
+.info-grid{
+  display:grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 8px 10px;
+}
+.info-grid .k{ color: var(--blueDark); font-weight: 800; font-size: 11px; }
+.info-grid .v{ color: #111; font-weight: 600; font-size: 11px; }
+
+.hint{
+  margin: 8px 0 0;
+  font-size: 11px;
+}
+
+/* Containers */
+.canvas-wrap{
+  background: #fff;
+  border: 1px solid rgba(13,71,161,.16);
+  border-radius: 16px;
+  padding: 10px;
+}
+.perfil-canvas{ height: 240px; }
+.idx-canvas{ height: 170px; }
+
+.matrix-card{
+  background: #fff;
+  border: 1px solid rgba(13,71,161,.16);
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: none; /* evita “peso” no PDF */
+  overflow: visible;
+}
+
+/* Perfil (tabela compacta) */
+.perfil-card{
+  border: 1px solid rgba(13,71,161,.16);
+  border-radius: 16px;
+  padding: 10px;
+  background: rgba(255,255,255,.65);
+}
+
+.perfil-table{
+  width:100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 8px;
+  table-layout: fixed;
+}
+
+.perfil-table th, .perfil-table td{
+  border: 1px solid rgba(13,71,161,.16);
+  padding: 5px 4px;
+  text-align:center;
+  font-size: 10.5px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.perfil-table thead th.perfil-group{
+  background: rgba(13,71,161,.10);
+  font-weight: 900;
+  color: var(--blueDark);
+}
+
+.perfil-table thead th.perfil-code{
+  background: rgba(13,71,161,.06);
+  font-weight: 900;
+  color: var(--blueDark);
+}
+
+.perfil-table td.perfil-val{
+  background:#fff;
+  font-weight: 900;
+  color: var(--blueDark);
+}
+
+/* Matriz (PB→PP + contribuição) */
+.wisc-matrix{
+  width:100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.wisc-matrix th, .wisc-matrix td{
+  border: 1px solid rgba(13,71,161,.16);
+  padding: 5px 5px;
+  vertical-align: middle;
+  font-size: 10px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.wisc-matrix thead th{
+  background: rgba(13,71,161,.08);
+  color: var(--blueDark);
+  font-weight: 900;
+}
+
+.wisc-matrix .idx{ text-align:center; width: 42px; }
+.wisc-matrix .col-sub{ width: 42%; }
+.wisc-matrix .col-pb{ width: 8%; text-align:center; }
+.wisc-matrix .col-pp{ width: 10%; text-align:center; }
+
+.wisc-matrix td.fill{ background: rgba(13,71,161,.10); }
+.wisc-matrix td.empty{ background: rgba(13,71,161,.05); }
+
+.wisc-matrix .pill{
+  display:inline-block;
+  min-width: 26px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: var(--blueDark);
+  color:#fff;
+  font-weight: 900;
+  font-size: 10px;
+}
+
+.wisc-matrix .pill.sup{
+  background: rgba(13,71,161,.78);
+}
+
+.wisc-matrix tfoot td{
+  font-weight: 900;
+  background: rgba(13,71,161,.08);
+  text-align:center;
+}
+
+.wisc-matrix tfoot .sum-label{
+  text-align:left;
+  color: var(--blueDark);
+}
+
+/* Rodapé */
+.report-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding: 10px 16px 12px;
+  border-top: 2px solid rgba(13,71,161,.14);
+  background: #fff;
+}
+
+.no-break{ break-inside:avoid; page-break-inside:avoid; }
+
+/* Melhor comportamento de impressão/PDF */
+@media print{
+  body{ background:#fff !important; }
+  .app-header, .back-btn, .exit-btn{ display:none !important; }
+  .main{ margin: 0 !important; padding: 0 !important; }
+  .card{ box-shadow:none !important; border:none !important; margin: 0 !important; padding: 0 !important; }
+  #relatorio .report{ max-width: none !important; border:none !important; }
+}
