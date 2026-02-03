@@ -430,9 +430,13 @@ button{
     .report .perfil-canvas{
     height: 340px !important; /* reduz só no PDF */
   }
-}
-
-}
+  .page-break-after{
+    break-after: page !important;
+    page-break-after: always !important;
+          }
+  
+    }
+  }
 
 
 /* =========================================
