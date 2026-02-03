@@ -591,7 +591,7 @@ function desenharGraficos(resultados, indicesInfo, qiInfo){
             return ["CF","CA","IN","AR","RP"].includes(c) ? `(${c})` : c;
               }
             }
-          }
+          },
 
           y:{
             min:1, max:19,
