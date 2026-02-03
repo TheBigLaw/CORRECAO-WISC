@@ -310,7 +310,6 @@ async function calcular(salvar=false){
     const rel = document.getElementById("relatorio");
     if(!rel) return;
 
-    // Gera PDF e salva como arquivo (mantém como já está no seu projeto)
     await html2pdf().set({
       margin: 10,
       filename: `WISC-IV_${nome}.pdf`,
@@ -436,7 +435,6 @@ function montarRelatorio(data){
 }
 
 function desenharGraficos(resultados, indicesInfo, qiInfo){
-  // Perfil: pontos ponderados subtestes
   const cSub = document.getElementById("grafSub");
   if(cSub){
     const ctx = cSub.getContext("2d");
@@ -454,7 +452,6 @@ function desenharGraficos(resultados, indicesInfo, qiInfo){
         const x = scales.x;
         const y = scales.y;
 
-        // faixa média 9-11
         const y9 = y.getPixelForValue(9);
         const y11 = y.getPixelForValue(11);
         ctx.save();
@@ -462,7 +459,6 @@ function desenharGraficos(resultados, indicesInfo, qiInfo){
         ctx.fillRect(chartArea.left, y11, chartArea.right-chartArea.left, y9-y11);
         ctx.restore();
 
-        // linhas verticais separando domínios (corrigidas)
         const vlines = [5.5, 9.5, 12.5];
         ctx.save();
         ctx.strokeStyle = "rgba(13,71,161,0.35)";
@@ -517,7 +513,6 @@ function desenharGraficos(resultados, indicesInfo, qiInfo){
     });
   }
 
-  // Índices e QIT (somatórios): perfil de pontos compostos
   const cIdx = document.getElementById("grafIdx");
   if(cIdx){
     const ctx = cIdx.getContext("2d");
