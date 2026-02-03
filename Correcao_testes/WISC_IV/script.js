@@ -578,18 +578,21 @@ function desenharGraficos(resultados, indicesInfo, qiInfo){
         },
         scales:{
           x:{
-            min:0.5, max:15.5,
-            grid:{ display:false },
-            ticks:{
-              autoSkip:false,
-              callback:(val)=> {
-                const idx = Math.round(val)-1;
-                const c = labels[idx];
-                if(!c) return "";
-                return ["CF","CA","IN","AR","RP"].includes(c) ? `(${c})` : c;
+            type: "linear",
+              min:0.5, max:15.5,
+                grid:{ display:false },
+                  ticks:{
+                  stepSize: 1,
+                  autoSkip:false,
+                   callback:(val)=> {
+            const idx = Math.round(val)-1;
+            const c = labels[idx];
+            if(!c) return "";
+            return ["CF","CA","IN","AR","RP"].includes(c) ? `(${c})` : c;
               }
             }
-          },
+          }
+
           y:{
             min:1, max:19,
             ticks:{ stepSize:1 },
