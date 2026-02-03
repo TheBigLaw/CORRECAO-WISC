@@ -7,12 +7,11 @@ let NORMAS = null;
 async function carregarNormas(){
   if (NORMAS) return NORMAS;
 
-  const url = "Correcao_testes/WISC_IV/data/normas-wisciv.json";
+  // ✅ caminho absoluto do GitHub Pages (não duplica pasta)
+  const url = "/Equilibrium_Neuro/Correcao_testes/WISC_IV/data/normas-wisciv.json";
 
   const resp = await fetch(url, { cache: "no-store" });
-  if (!resp.ok) {
-    throw new Error(`Erro ao carregar normas (${resp.status}): ${url}`);
-  }
+  if(!resp.ok) throw new Error(`Não foi possível carregar ${url} (HTTP ${resp.status})`);
 
   NORMAS = await resp.json();
   return NORMAS;
