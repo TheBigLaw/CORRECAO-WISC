@@ -3,22 +3,49 @@
 const LAUDOS_KEY = "empresa_laudos_wisciv_v1";
 
 let NORMAS = null;
+
 async function carregarNormas(){
   if (NORMAS) return NORMAS;
 
-  // Resolve correto mesmo com <base href="/Equilibrium_Neuro/">
-  const baseHref = document.querySelector("base")?.href || window.location.href;
+  // 1) tenta caminhos prováveis (cobrindo <base href="/Equilibrium_Neuro/">)
+  const baseHref = document.querySelector("base")?.getAttribute("href") || "/";
+  const baseURL  = new URL(baseHref, window.location.origin);     // ex: https://.../Equilibrium_Neuro/
+  const pageURL  = new URL(window.location.href);                  // URL real da página
 
-  // ✅ nome correto do arquivo: normas-wisciv.json
-  const url = new URL("Correcao_testes/WISC_IV/data/normas-wisciv.json", baseHref).toString();
+  const candidates = [
+    // A) relativo à pasta atual (ignora <base> pois usa window.location.href)
+    new URL("./data/normas-wisciv.json", pageURL).toString(),
+    new URL("./data/normas-wisciv.json", pageURL).toString().replace("/novo-laudo.html","/data/normas-wisciv.json"),
 
-  const resp = await fetch(url, { cache: "no-store" });
-  if(!resp.ok) throw new Error(`Não foi possível carregar ${url} (HTTP ${resp.status})`);
+    // B) relativo ao <base> (quando o <base> existe)
+    new URL("Correcao_testes/WISC_IV/data/normas-wisciv.json", baseURL).toString(),
+    new URL("Correcao_testes/WISC_IV/data/normas-wisciv.json", window.location.origin + "/").toString(),
 
-  NORMAS = await resp.json();
-  return NORMAS;
+    // C) fallback absoluto (caso algum rewrite esteja diferente)
+    window.location.origin + "/Equilibrium_Neuro/Correcao_testes/WISC_IV/data/normas-wisciv.json"
+  ];
+
+  let lastErr = null;
+
+  for (const url of candidates) {
+    try {
+      const resp = await fetch(url, { cache: "no-store" });
+      if (!resp.ok) {
+        lastErr = new Error(`HTTP ${resp.status} ao carregar: ${url}`);
+        continue;
+      }
+      const json = await resp.json();
+      NORMAS = json;
+      return NORMAS;
+    } catch (e) {
+      lastErr = new Error(`Falha ao carregar/parsear JSON em: ${url}\n${e?.message || e}`);
+      continue;
+    }
+  }
+
+  // Se chegou aqui, falhou em todas
+  throw lastErr || new Error("Falha ao carregar normas (sem detalhes).");
 }
-
 
 // Subtestes (ordem objetiva)
 const SUBTESTES = [
