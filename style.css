@@ -393,11 +393,19 @@ button{
 @media print{
   body{ background:#fff !important; }
   .app-header, .back-btn, .exit-btn{ display:none !important; }
-  .main{ padding:0 !important; }
+  .main{
+    margin: 0 !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
   .card{ box-shadow:none !important; border:none !important; }
   .matrix-card, .perfil-card{ border:1px solid rgba(0,0,0,.15) !important; }
   .matrix-card{ overflow: visible !important; }
   .perfil-card{ overflow: visible !important; }
+  .report{
+    margin-top: 0 !important;
+  }
+  
 }
 
 }
