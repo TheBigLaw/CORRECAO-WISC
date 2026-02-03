@@ -427,6 +427,9 @@ button{
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
+    .report .perfil-canvas{
+    height: 340px !important; /* reduz só no PDF */
+  }
 }
 
 }
