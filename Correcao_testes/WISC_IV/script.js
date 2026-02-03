@@ -3,20 +3,13 @@
 const LAUDOS_KEY = "empresa_laudos_wisciv_v1";
 
 let NORMAS = null;
-
 async function carregarNormas(){
-  if (NORMAS) return NORMAS;
-
-  // ✅ caminho absoluto do GitHub Pages (não duplica pasta)
-  const url = "/Equilibrium_Neuro/Correcao_testes/WISC_IV/data/normas-wisciv.json";
-
-  const resp = await fetch(url, { cache: "no-store" });
-  if(!resp.ok) throw new Error(`Não foi possível carregar ${url} (HTTP ${resp.status})`);
-
+  if(NORMAS) return NORMAS;
+  const resp = await fetch("data/normas-wisciv.json", { cache:"no-store" });
+  if(!resp.ok) throw new Error("Não foi possível carregar data/normas-wisciv.json");
   NORMAS = await resp.json();
   return NORMAS;
 }
-
 
 // Subtestes (ordem objetiva)
 const SUBTESTES = [
@@ -114,100 +107,6 @@ function somarQI(pondByCode) {
   return { soma, usados };
 }
 
-function obterNomeSubteste(codigo){
-  const map = {
-    CB:"Cubos", SM:"Semelhanças", DG:"Dígitos", CN:"Conceitos Figurativos", CD:"Código",
-    VC:"Vocabulário", SNL:"Seq. Núm. e Letras", RM:"Raciocínio Matricial", CO:"Compreensão",
-    PS:"Procurar Símbolos", CF:"Completar Figuras", CA:"Cancelamento", IN:"Informação",
-    AR:"Aritmética", RP:"Raciocínio com Palavras"
-  };
-  return map[codigo] || codigo;
-}
-
-function cellIndice(codigo, setUsado, setPossivel, resultados) {
-  if (!setPossivel.has(codigo)) return `<td class="idx"></td>`;
-  if (!setUsado.has(codigo)) return `<td class="idx fill empty"></td>`;
-  const r = resultados[codigo];
-  if (!r) return `<td class="idx fill"></td>`;
-  const suplementar = ["CF","CA","IN","AR","RP"].includes(codigo);
-  const cls = suplementar ? "pill sup" : "pill";
-  return `<td class="idx fill"><span class="${cls}">${r.ponderado}</span></td>`;
-}
-
-function renderMatrizConversao({ resultados, indicesInfo, qiInfo }) {
-  const usadosICV = new Set(indicesInfo?.ICV?.usados || []);
-  const usadosIOP = new Set(indicesInfo?.IOP?.usados || []);
-  const usadosIMO = new Set(indicesInfo?.IMO?.usados || []);
-  const usadosIVP = new Set(indicesInfo?.IVP?.usados || []);
-  const usadosQI  = new Set(qiInfo?.usados || []);
-
-  const possiveis = {
-    ICV: new Set(["SM","VC","CO","IN","RP"]),
-    IOP: new Set(["CB","CN","RM","CF"]),
-    IMO: new Set(["DG","SNL","AR"]),
-    IVP: new Set(["CD","PS","CA"]),
-  };
-
-  const ordem = ["CB","SM","DG","CN","CD","VC","SNL","RM","CO","PS","CF","CA","IN","AR","RP"];
-
-  const linhas = ordem.map(codigo => {
-    const r = resultados[codigo] || { bruto: "", ponderado: "" };
-    const nome = obterNomeSubteste(codigo);
-
-    const qitCell =
-      usadosQI.has(codigo) && resultados[codigo]
-        ? `<td class="idx fill"><span class="pill">${resultados[codigo].ponderado}</span></td>`
-        : usadosQI.has(codigo)
-          ? `<td class="idx fill empty"></td>`
-          : `<td class="idx"></td>`;
-
-    return `
-      <tr>
-        <td class="col-sub"><b>${nome}</b> <span class="muted">(${codigo})</span></td>
-        <td class="col-pb">${r.bruto ?? ""}</td>
-        <td class="col-pp">${r.ponderado ?? ""}</td>
-        ${cellIndice(codigo, usadosICV, possiveis.ICV, resultados)}
-        ${cellIndice(codigo, usadosIOP, possiveis.IOP, resultados)}
-        ${cellIndice(codigo, usadosIMO, possiveis.IMO, resultados)}
-        ${cellIndice(codigo, usadosIVP, possiveis.IVP, resultados)}
-        ${qitCell}
-      </tr>
-    `;
-  }).join("");
-
-  return `
-    <table class="wisc-matrix">
-      <thead>
-        <tr>
-          <th class="col-sub">Subtestes</th>
-          <th class="col-pb">PB</th>
-          <th class="col-pp">Ponderado</th>
-          <th colspan="5">Contribuição (Pontos Ponderados)</th>
-        </tr>
-        <tr>
-          <th></th><th></th><th></th>
-          <th class="idx">ICV</th>
-          <th class="idx">IOP</th>
-          <th class="idx">IMO</th>
-          <th class="idx">IVP</th>
-          <th class="idx">QIT</th>
-        </tr>
-      </thead>
-      <tbody>${linhas}</tbody>
-      <tfoot>
-        <tr>
-          <td class="sum-label" colspan="3">Soma dos Pontos Ponderados</td>
-          <td>${indicesInfo?.ICV?.soma ?? "—"}</td>
-          <td>${indicesInfo?.IOP?.soma ?? "—"}</td>
-          <td>${indicesInfo?.IMO?.soma ?? "—"}</td>
-          <td>${indicesInfo?.IVP?.soma ?? "—"}</td>
-          <td>${qiInfo?.soma ?? "—"}</td>
-        </tr>
-      </tfoot>
-    </table>
-  `;
-}
-
 function montarInputsSubtestes(){
   const tbody = document.getElementById("tbodySubtestes");
   if(!tbody) return;
@@ -297,252 +196,120 @@ async function calcular(salvar){
 
     montarRelatorio({ nome, nasc, apl, idade, faixa, resultados, indicesInfo, qiInfo });
 
-    if(salvar){
-      const rel = document.getElementById("relatorio");
-      await esperarImagensCarregarem(rel);
-      await new Promise(r => setTimeout(r, 150));
-
-      await html2pdf().set({
-        margin: [8, 8, 8, 8],
-        filename: `WISC-IV_${nome}.pdf`,
-        pagebreak: { mode: ["css", "legacy"], avoid: ".no-break" },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: false,
-          backgroundColor: "#ffffff",
-          imageTimeout: 15000
-        },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-      }).from(rel).save();
-
-      const laudos = getLaudos();
-      laudos.unshift({
-        nome,
-        dataAplicacao: apl,
-        faixa,
-        createdAt: new Date().toISOString(),
-        htmlRelatorio: rel.outerHTML
-      });
-      setLaudos(laudos);
-
-      alert("Laudo salvo e PDF gerado.");
-    }
-
   }catch(e){
     console.error(e);
     alert("Erro ao calcular. Verifique normas-wisciv.json em /tests/wisciv/data/.");
   }
 }
 
-function renderPerfilSubtestes(resultados){
-  const grupos = [
-    { titulo: "Compreensão Verbal", codes: ["SM","VC","CO","IN","RP"] },
-    { titulo: "Organização Perceptual", codes: ["CB","CN","RM","CF"] },
-    { titulo: "Memória Operacional", codes: ["DG","SNL","AR"] },
-    { titulo: "Velocidade de Proc.", codes: ["CD","PS","CA"] },
-  ];
-  const supl = new Set(["CF","CA","IN","AR","RP"]);
-
-  const head1 = grupos.map(g => `<th colspan="${g.codes.length}" class="perfil-group">${g.titulo}</th>`).join("");
-  const codes = grupos.flatMap(g => g.codes).map(c=>{
-    const label = supl.has(c) ? `(${c})` : c;
-    return `<th class="perfil-code">${label}</th>`;
-  }).join("");
-  const vals = grupos.flatMap(g => g.codes).map(c=>{
-    const v = resultados?.[c]?.ponderado;
-    return `<td class="perfil-val">${v ?? "—"}</td>`;
-  }).join("");
-
-  return `
-    <table class="perfil-table">
-      <thead>
-        <tr>${head1}</tr>
-        <tr>${codes}</tr>
-      </thead>
-      <tbody>
-        <tr>${vals}</tr>
-      </tbody>
-    </table>
-  `;
-}
-
-function montarRelatorio(data) {
+// Relatório
+function montarRelatorio(data){
   const rel = document.getElementById("relatorio");
-  if (!rel) return;
-
-  function registrarPluginsChart(){
-  // placeholder seguro — evita ReferenceError
-  return;
-}
+  if(!rel) return;
 
   const { nome, nasc, apl, idade, faixa, resultados, indicesInfo, qiInfo } = data;
-  const matriz = renderMatrizConversao({ resultados, indicesInfo, qiInfo });
-  const perfil = renderPerfilSubtestes(resultados);
 
   rel.style.display = "block";
   rel.innerHTML = `
-    <div class="report">
-      <div class="report-header">
-        <img class="report-logo report-logo-top" src="logo2.png" alt="Logo" onerror="this.style.display='none'">
-        <div class="report-title">
-          <div class="t1">Relatório – WISC-IV</div>
-          <div class="t2">Conversão PB → Ponderado e somatórios por índice</div>
-        </div>
-        <div class="report-meta">
-          <div class="badge">Faixa: ${faixa}</div>
-          <div class="muted">Idade: ${idade.anos}a ${idade.meses}m</div>
+    <div class="topline">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <img class="logo" src="/logo.png" alt="Logo" onerror="this.style.display='none'">
+        <div>
+          <div style="font-weight:800;color:#0d47a1;font-size:16px;">Relatório – WISC-IV</div>
+          <div class="muted">Gerado automaticamente</div>
         </div>
       </div>
-
-      <div class="section report-info no-break">
-        <div class="info-grid">
-          <div><span class="k">Nome:</span> <span class="v">${nome}</span></div>
-          <div><span class="k">Nascimento:</span> <span class="v">${formatarDataISO(nasc)}</span></div>
-          <div><span class="k">Aplicação:</span> <span class="v">${formatarDataISO(apl)}</span></div>
-        </div>
+      <div style="text-align:right;">
+        <div class="badge">Faixa: ${faixa}</div>
+        <div class="muted" style="margin-top:6px;">Idade: ${idade.anos}a ${idade.meses}m</div>
       </div>
+    </div>
 
-      <div class="section no-break">
-        <h3>Perfil dos Pontos Ponderados dos Subtestes</h3>
-        <div class="perfil-card">
-          ${perfil}
-          <div class="canvas-wrap perfil-canvas"><canvas id="grafSub" height="220"></canvas></div>
-        </div>
-        <p class="muted" style="margin:10px 0 0;">
-          A faixa azul indica a região média aproximada (9–11) dos pontos ponderados.
-        </p>
+    <div class="section">
+      <div><b style="color:#0d47a1">Nome:</b> ${nome}</div>
+      <div class="muted" style="margin-top:6px;">
+        <b style="color:#0d47a1">Nascimento:</b> ${nasc} &nbsp;&nbsp;|&nbsp;&nbsp;
+        <b style="color:#0d47a1">Aplicação:</b> ${apl}
       </div>
+    </div>
 
-      <div class="section">
-        <h3>Conversão PB → Ponderado e contribuição nos Índices</h3>
-        <div class="matrix-card no-break">${matriz}</div>
-        <p class="muted" style="margin:10px 0 0;">
-          Células azuis indicam subtestes usados na soma do índice/QIT. Suplementares podem aparecer entre parênteses.
-        </p>
-      </div>
-
-      <div class="section">
-        <h3>Subtestes (detalhamento)</h3>
-        <table class="table">
-          <thead><tr><th>Subteste</th><th>PB</th><th>Ponderado</th><th>Classificação</th></tr></thead>
-          <tbody>
-            ${Object.values(resultados).map(r=>`
-              <tr>
-                <td><b>${r.nome}</b> <span class="muted">(${r.codigo})</span></td>
-                <td>${r.bruto}</td>
-                <td>${r.ponderado}</td>
-                <td>${r.classificacao}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      </div>
-
-      <div class="section">
-        <h3>Índices e QIT (somatórios)</h3>
-        <div class="canvas-wrap"><canvas id="grafIdx" height="180"></canvas></div>
-
-        <table class="table" style="margin-top:12px;">
-          <thead><tr><th>Medida</th><th>Soma (ponderados)</th><th>Subtestes usados</th></tr></thead>
-          <tbody>
-            ${Object.entries(INDICES).map(([k, def])=>{
-              const info = indicesInfo[k];
-              return `
-                <tr>
-                  <td><b>${k}</b></td>
-                  <td>${info.soma ?? "—"}</td>
-                  <td>${(info.usados||[]).join(", ") || "—"}</td>
-                </tr>
-              `;
-            }).join("")}
+    <div class="section">
+      <h3>Subtestes</h3>
+      <div class="canvas-wrap"><canvas id="grafSub" height="160"></canvas></div>
+      <table class="table" style="margin-top:12px;">
+        <thead><tr><th>Subteste</th><th>PB</th><th>Ponderado</th><th>Classificação</th></tr></thead>
+        <tbody>
+          ${Object.values(resultados).map(r=>`
             <tr>
-              <td><b>QIT</b></td>
-              <td>${qiInfo.soma ?? "—"}</td>
-              <td>${(qiInfo.usados||[]).join(", ") || "—"}</td>
+              <td><b>${r.nome}</b> <span class="muted">(${r.codigo})</span></td>
+              <td>${r.bruto}</td>
+              <td>${r.ponderado}</td>
+              <td>${r.classificacao}</td>
             </tr>
-          </tbody>
-        </table>
-      </div>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
 
-      <div class="report-footer">
-        <div class="muted">Documento gerado automaticamente</div>
-        <img class="report-logo report-logo-bottom" src="logo2.png" alt="Logo" onerror="this.style.display='none'">
-      </div>
+    <div class="section">
+      <h3>Índices e QIT (somatórios)</h3>
+      <div class="canvas-wrap"><canvas id="grafIdx" height="160"></canvas></div>
+      <table class="table" style="margin-top:12px;">
+        <thead><tr><th>Medida</th><th>Soma (ponderados)</th><th>Subtestes usados</th></tr></thead>
+        <tbody>
+          ${Object.entries(INDICES).map(([k])=>{
+            const info = indicesInfo[k];
+            return `
+              <tr>
+                <td><b>${k}</b></td>
+                <td>${info.soma ?? "—"}</td>
+                <td>${(info.usados||[]).join(", ") || "—"}</td>
+              </tr>
+            `;
+          }).join("")}
+          <tr>
+            <td><b>QIT</b></td>
+            <td>${qiInfo.soma ?? "—"}</td>
+            <td>${(qiInfo.usados||[]).join(", ") || "—"}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   `;
 
   desenharGraficos(resultados, indicesInfo, qiInfo);
 }
 
+// Gráficos
 function desenharGraficos(resultados, indicesInfo, qiInfo){
-  registrarPluginsChart();
-
-  // ---------- Subtestes: SCATTER (pontos) ----------
   const ctxSub = document.getElementById("grafSub");
   if(ctxSub){
-    if(chartSub) chartSub.destroy();
+    const labels = Object.values(resultados).map(r=>r.codigo);
+    const vals = Object.values(resultados).map(r=>r.ponderado);
 
-    const labels = ["SM","VC","CO","IN","RP","CB","CN","RM","CF","DG","SNL","AR","CD","PS","CA"];
-    const points = labels
-      .map((c, i) => {
-        const v = resultados?.[c]?.ponderado;
-        return (v == null) ? null : { x: i+1, y: Number(v) };
-      })
-      .filter(Boolean);
-
-    chartSub = new Chart(ctxSub, {
-      type:"scatter",
+    new Chart(ctxSub, {
+      type:"line",
       data:{
+        labels,
         datasets:[{
-          data: points,
-          pointRadius: 5,
-          pointHoverRadius: 6,
+          data: vals,
+          showLine:false,
+          pointRadius:4,
+          pointHoverRadius:5,
+          borderWidth:0
         }]
       },
       options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{
-          legend:{ display:false },
-          wiscScatterDecor:{
-            band:{ min:9, max:11 },
-            vlines:[6, 10, 13],
-            groupLabels:[
-              { from:1, to:5, text:"Compreensão Verbal" },
-              { from:6, to:9, text:"Organização Perceptual" },
-              { from:10, to:12, text:"Memória Operacional" },
-              { from:13, to:15, text:"Velocidade de Proc." },
-            ]
-          }
-        },
+        plugins:{ legend:{ display:false } },
         scales:{
-          x:{
-            min:0.5, max:15.5,
-            grid:{ display:false },
-            ticks:{
-              autoSkip:false,
-              callback:(val)=> {
-                const idx = Math.round(val)-1;
-                const c = labels[idx];
-                if(!c) return "";
-                return ["CF","CA","IN","AR","RP"].includes(c) ? `(${c})` : c;
-              }
-            }
-          },
-          y:{
-            min:1, max:19,
-            ticks:{ stepSize:1 },
-          }
+          y:{ min:1, max:19, ticks:{ stepSize:1 } }
         }
       }
     });
   }
 
-  // ---------- Índices e QIT: pontos ----------
   const ctxIdx = document.getElementById("grafIdx");
   if(ctxIdx){
-    if(chartIdx) chartIdx.destroy();
     const labels = ["ICV","IOP","IMO","IVP","QIT"];
     const vals = [
       indicesInfo?.ICV?.soma ?? null,
@@ -551,102 +318,18 @@ function desenharGraficos(resultados, indicesInfo, qiInfo){
       indicesInfo?.IVP?.soma ?? null,
       qiInfo?.soma ?? null,
     ];
-    const pts = vals.map((v,i)=> v==null ? null : ({x:i+1, y:Number(v)})).filter(Boolean);
 
-    chartIdx = new Chart(ctxIdx, {
-      type:"scatter",
-      data:{ datasets:[{ data: pts, pointRadius:5, pointHoverRadius:6 }] },
+    new Chart(ctxIdx, {
+      type:"bar",
+      data:{
+        labels,
+        datasets:[{ data: vals }]
+      },
       options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{ legend:{ display:false } },
-        scales:{
-          x:{
-            min:0.5, max:5.5,
-            grid:{ display:false },
-            ticks:{
-              autoSkip:false,
-              callback:(val)=>{
-                const idx=Math.round(val)-1;
-                return labels[idx] || "";
-              }
-            }
-          },
-          y:{ beginAtZero:true }
-        }
+        plugins:{ legend:{ display:false } }
       }
     });
   }
-}
-
-function renderListaLaudos(){
-  const box = document.getElementById("listaLaudos");
-  if(!box) return;
-
-  const laudos = getLaudos();
-  if(!laudos.length){
-    box.innerHTML = `<p class="muted">Nenhum laudo salvo ainda.</p>`;
-    return;
-  }
-
-  box.innerHTML = `
-    <table class="table">
-      <thead><tr><th>Paciente</th><th>Aplicação</th><th>Faixa</th><th>Ações</th></tr></thead>
-      <tbody>
-        ${laudos.map((x, idx)=>`
-          <tr>
-            <td>${x.nome}</td>
-            <td>${x.dataAplicacao}</td>
-            <td><span class="badge">${x.faixa}</span></td>
-            <td><button class="btn-outline" onclick="baixarPDFSalvo(${idx})">Baixar PDF</button></td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
-}
-
-// =========================
-// PDF (html2pdf) — helpers
-// =========================
-async function esperarImagensCarregarem(container){
-  const imgs = Array.from(container.querySelectorAll("img"));
-  await Promise.all(imgs.map(img => {
-    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
-    return new Promise(resolve => {
-      img.onload = () => resolve();
-      img.onerror = () => resolve();
-    });
-  }));
-}
-
-async function baixarPDFSalvo(index){
-  const laudos = getLaudos();
-  const item = laudos[index];
-  if(!item) return alert("Laudo não encontrado.");
-
-  const temp = document.createElement("div");
-  temp.innerHTML = item.htmlRelatorio;
-  document.body.appendChild(temp);
-
-  await esperarImagensCarregarem(temp);
-  await new Promise(r => setTimeout(r, 150));
-
-  await html2pdf().set({
-    margin: [8, 8, 8, 8],
-    filename: `WISC-IV_${item.nome}.pdf`,
-    pagebreak: { mode: ["css", "legacy"], avoid: ".no-break" },
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      allowTaint: false,
-      backgroundColor: "#ffffff",
-      imageTimeout: 15000
-    },
-    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-  }).from(temp).save();
-
-  temp.remove();
 }
 
 (function init(){
@@ -654,9 +337,5 @@ async function baixarPDFSalvo(index){
     montarInputsSubtestes();
     document.getElementById("dataNascimento")?.addEventListener("change", atualizarPreviewIdade);
     document.getElementById("dataAplicacao")?.addEventListener("change", atualizarPreviewIdade);
-  }
-
-  if(document.getElementById("listaLaudos")){
-    renderListaLaudos();
   }
 })();
