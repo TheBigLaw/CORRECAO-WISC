@@ -528,9 +528,13 @@ function montarRelatorio(data) {
 
       <div class="report-footer">
         <div class="muted">Documento gerado automaticamente</div>
+
+        <button class="btn-print no-print" onclick="imprimirRelatorio()">
+            Imprimir (PDF)
+        </button>
+
         <img class="report-logo report-logo-bottom" src="/Equilibrium_Neuro/logo2.png" alt="Logo" onerror="this.style.display='none'">
       </div>
-    </div>
   `;
 
   desenharGraficos(resultados, indicesInfo, qiInfo);
@@ -773,3 +777,14 @@ temp.remove();
     renderListaLaudos();
   }
 })();
+
+async function imprimirRelatorio(){
+  const rel = document.getElementById("relatorio");
+  if(!rel) return;
+
+  // garante imagens e gráficos antes de imprimir
+  await esperarImagensCarregarem(rel);
+  await new Promise(r => setTimeout(r, 250));
+
+  window.print();
+}
