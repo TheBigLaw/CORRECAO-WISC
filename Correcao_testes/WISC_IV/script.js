@@ -1,3 +1,4 @@
+console.log("SCRIPT WISC CARREGADO v3");
 // tests/wisciv/script.js
 
 const LAUDOS_KEY = "empresa_laudos_wisciv_v1";
