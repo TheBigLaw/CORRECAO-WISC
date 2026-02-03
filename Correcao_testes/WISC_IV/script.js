@@ -732,7 +732,7 @@ async function esperarImagensCarregarem(container){
   }));
 }
 
-async function baixarPDFSalvo(index){
+//async function baixarPDFSalvo(index){
   const laudos = getLaudos();
   const item = laudos[index];
   if(!item) return alert("Laudo não encontrado.");
@@ -746,19 +746,19 @@ await esperarImagensCarregarem(temp);
 // pequeno delay para assegurar renderização dos gráficos/canvas
 await new Promise(r => setTimeout(r, 150));
 
-await html2pdf().set({
-  margin: [8, 8, 8, 8],
-  filename: `WISC-IV_${item.nome}.pdf`,
-  pagebreak: { mode: ["css", "legacy"], avoid: ".no-break" },
-  html2canvas: {
-    scale: 2,
-    useCORS: true,
-    allowTaint: false,
-    backgroundColor: "#ffffff",
-    imageTimeout: 15000
-  },
-  jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-}).from(temp).save();
+//await html2pdf().set({
+//  margin: [8, 8, 8, 8],
+//  filename: `WISC-IV_${item.nome}.pdf`,
+//  pagebreak: { mode: ["css", "legacy"], avoid: ".no-break" },
+//  html2canvas: {
+//    scale: 2,
+//    useCORS: true,
+//    allowTaint: false,
+//    backgroundColor: "#ffffff",
+//    imageTimeout: 15000
+//  },
+//  jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+//}).from(temp).save();
 
 temp.remove();
 
