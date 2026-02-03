@@ -371,6 +371,11 @@ function montarRelatorio(data) {
   const rel = document.getElementById("relatorio");
   if (!rel) return;
 
+  function registrarPluginsChart(){
+  // placeholder seguro — evita ReferenceError
+  return;
+}
+
   const { nome, nasc, apl, idade, faixa, resultados, indicesInfo, qiInfo } = data;
   const matriz = renderMatrizConversao({ resultados, indicesInfo, qiInfo });
   const perfil = renderPerfilSubtestes(resultados);
