@@ -653,24 +653,33 @@ const points = Object.keys(xPos)
       type:"scatter",
       data:{ datasets:[{ data: pts, pointRadius:5, pointHoverRadius:6 }] },
       options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{ legend:{ display:false } },
-        scales:{
-          x:{
-            min:0.5, max:5.5,
-            grid:{ display:false },
-            ticks:{
-              autoSkip:false,
-              callback:(val)=>{
-                const idx=Math.round(val)-1;
-                return labels[idx] || "";
-              }
-            }
-          },
-          y:{ beginAtZero:true }
+  responsive:true,
+  maintainAspectRatio:false,
+  layout: { padding: { left: 6, right: 6, top: 6, bottom: 6 } },
+  plugins:{ legend:{ display:false } },
+  scales:{
+    x:{
+      min:0.5, max:5.5,
+      grid:{ display:false },
+      ticks:{
+        autoSkip:false,
+        font:{ size: 10 },
+        callback:(val)=>{
+          const idx=Math.round(val)-1;
+          return labels[idx] || "";
         }
       }
+    },
+    y:{
+      // em vez de beginAtZero, fica clínico e legível
+      suggestedMin: 0,
+      suggestedMax: 60,
+      ticks:{ font:{ size: 10 } },
+      grid:{ color:"rgba(13,71,161,.10)" }
+    }
+  }
+}
+
     });
   }
 }
